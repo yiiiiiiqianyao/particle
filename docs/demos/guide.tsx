@@ -26,7 +26,7 @@ class SceneManager {
   scene: Scene;
   camera: THREE.PerspectiveCamera;
   control: OrbitControls;
-  mesh: THREE.Mesh;
+
   // proton!: Proton
   constructor(wrap: HTMLDivElement) {
        const scene = new THREE.Scene();
