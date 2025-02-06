@@ -1,6 +1,6 @@
 import { AdditiveBlending, Sprite, SpriteMaterial, TextureLoader } from "three";
-
-export function createSprite(path = "./dot.png") {
+import dot from '../assets/dot.png';
+export function createSprite(path = dot) {
     const map = new TextureLoader().load(path);
     const material = new SpriteMaterial({
         map: map,
