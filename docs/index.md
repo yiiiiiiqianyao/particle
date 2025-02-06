@@ -1,12 +1,12 @@
 ---
 hero:
-  title: library
-  description: A react library developed with dumi
+  title: A Particle Library
+  description: A Simple Particle Library From three.proton
   actions:
-    - text: Hello
-      link: /
-    - text: World
-      link: /
+    - text: HelloWorld
+      link: /helloworld
+    - text: MeshRender
+      link: /mesh-render
 features:
   - title: Hello
     emoji: 💎

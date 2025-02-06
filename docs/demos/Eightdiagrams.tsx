@@ -98,8 +98,8 @@ class SceneManager {
     proton.addEmitter(emitter2);
     proton.addRender(new SpriteRender(scene));
 
-    Debug.drawEmitter(proton, scene, emitter1);
-    Debug.drawEmitter(proton, scene, emitter2);
+    // Debug.drawEmitter(proton, scene, emitter1);
+    // Debug.drawEmitter(proton, scene, emitter2);
     this.animate();
   }
 
