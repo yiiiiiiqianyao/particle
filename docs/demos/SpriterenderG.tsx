@@ -1,21 +1,23 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  Alpha,
   Body,
   Color,
   Debug,
   ease,
   Emitter,
+  Gravity,
   Life,
   Mass,
   Position,
   Proton,
-  Radius,
+  RandomDrift,
   Rate,
   Scale,
-  ScreenZone,
   Span,
+  SphereZone,
   SpriteRender,
+  Vector3D,
+  Velocity,
 } from 'particle';
 import * as THREE from 'three';
 import {
@@ -25,7 +27,8 @@ import {
   WebGLRenderer,
 } from 'three';
 import { createSprite } from './utils';
-
+// @ts-ignore
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -47,7 +50,7 @@ class SceneManager {
   scene: Scene;
   camera: THREE.PerspectiveCamera;
   proton!: Proton;
-
+  control: OrbitControls;
   constructor(wrap: HTMLDivElement) {
     const scene = new THREE.Scene();
     this.scene = scene;
@@ -61,7 +64,9 @@ class SceneManager {
     );
     camera.position.z = 500;
     this.camera = camera;
-
+    const control = new OrbitControls(camera, wrap);
+    this.control = control;
+    control.update();
 
     // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
@@ -76,31 +81,34 @@ class SceneManager {
 
     const proton = new Proton();
     this.proton = proton;
-    proton.addEmitter(this.createEmitter(camera, renderer));
+    proton.addEmitter(this.createEmitter());
     proton.addRender(new SpriteRender(scene));
     this.animate();
   }
 
   animate = () => {
-    const { renderer, scene, camera, proton } = this;
+    const { renderer, scene, camera, proton, control } = this;
     proton.update();
+    control.update();
     renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
     Debug.renderInfo(proton, 3)
   }
 
-  createEmitter(camera: THREE.Camera, renderer: WebGLRenderer) {
-    const colors = ['#529B88', '#CDD180', '#FFFA32', '#FB6255', '#FB4A53', '#FF4E50', '#F9D423'];
+  createEmitter() {
     const emitter = new Emitter();
-    emitter.rate = new Rate(new Span(3, 6), new Span(.05, .2));
-    emitter.addInitialize(new Mass(1));
-    emitter.addInitialize(new Radius(200, 400));
-    emitter.addInitialize(new Life(2, 4));
+    emitter.rate = new Rate(new Span(10, 15), new Span(.05, .1));
     emitter.addInitialize(new Body(createSprite()));
-    emitter.addInitialize(new Position(new ScreenZone(camera, renderer)));
-    emitter.addBehaviour(new Alpha(0, 1, Infinity, ease.easeOutCubic));
-    emitter.addBehaviour(new Scale(2, 0, Infinity, ease.easeOutCubic));
-    emitter.addBehaviour(new Color(colors, 'random'));
+    emitter.addInitialize(new Mass(1));
+    emitter.addInitialize(new Life(1, 3));
+    emitter.addInitialize(new Position(new SphereZone(20)));
+    emitter.addInitialize(new Velocity(new Span(500, 800), new Vector3D(0, 1, 0), 30));
+    emitter.addBehaviour(new RandomDrift(10, 10, 10, .05));
+    emitter.addBehaviour(new Scale(new Span(2, 3.5), 0));
+    emitter.addBehaviour(new Gravity(6));
+    emitter.addBehaviour(new Color('#FF0026', ['#ffff00', '#ffff11'], Infinity, ease.easeOutSine));
+    emitter.p.x = 0;
+    emitter.p.y = -150;
     emitter.emit();
     return emitter;
 }

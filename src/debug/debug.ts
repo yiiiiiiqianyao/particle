@@ -69,7 +69,7 @@ export class Debug {
     });
   }
 
-  static renderInfo(proton: Proton, style: any) {
+  static renderInfo(proton: Proton, style: number | any) {
     function getCreatedNumber(proton: Proton, type) {
       var pool = type === "material" ? "_materialPool" : "_targetPool";
       var renderer = proton.renderers[0];

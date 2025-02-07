@@ -1,21 +1,28 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  Alpha,
   Body,
+  BoxZone,
   Color,
+  CrossZone,
   Debug,
   ease,
   Emitter,
+  Gravity,
   Life,
   Mass,
   Position,
   Proton,
   Radius,
+  RandomDrift,
   Rate,
+  Rotate,
   Scale,
   ScreenZone,
   Span,
+  SphereZone,
   SpriteRender,
+  Vector3D,
+  Velocity,
 } from 'particle';
 import * as THREE from 'three';
 import {
@@ -24,8 +31,9 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { createSprite } from './utils';
-
+import Snow from '../assets/snow.png';
+// @ts-ignore
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -47,7 +55,7 @@ class SceneManager {
   scene: Scene;
   camera: THREE.PerspectiveCamera;
   proton!: Proton;
-
+  control: OrbitControls;
   constructor(wrap: HTMLDivElement) {
     const scene = new THREE.Scene();
     this.scene = scene;
@@ -61,7 +69,9 @@ class SceneManager {
     );
     camera.position.z = 500;
     this.camera = camera;
-
+    const control = new OrbitControls(camera, wrap);
+    this.control = control;
+    control.update();
 
     // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
@@ -76,34 +86,44 @@ class SceneManager {
 
     const proton = new Proton();
     this.proton = proton;
-    proton.addEmitter(this.createEmitter(camera, renderer));
+    const emitter = new Emitter();
+    emitter.rate = new Rate(new Span(34, 48), new Span(.2, .5));
+    emitter.addInitialize(new Mass(1));
+    emitter.addInitialize(new Radius(new Span(10, 20)));
+
+    const position = new Position();
+    position.addZone(new BoxZone(2500, 10, 2500));
+    emitter.addInitialize(position);
+
+    emitter.addInitialize(new Life(5, 10));
+    emitter.addInitialize(new Body(this.createSnow()));
+    emitter.addInitialize(new Velocity(0, new Vector3D(0, -1, 0), 90));
+
+    emitter.addBehaviour(new RandomDrift(10, 1, 10, .05));
+    emitter.addBehaviour(new Rotate("random", "random"));
+    emitter.addBehaviour(new Gravity(2));
+
+    const screenZone = new ScreenZone(camera, renderer, 20, "234");
+    emitter.addBehaviour(new CrossZone(screenZone, "dead"));
+
+    emitter.p.x = 0;
+    emitter.p.y = 800;
+    emitter.emit();
+
+    proton.addEmitter(emitter);
     proton.addRender(new SpriteRender(scene));
     this.animate();
   }
 
   animate = () => {
-    const { renderer, scene, camera, proton } = this;
+    const { renderer, scene, camera, proton, control } = this;
     proton.update();
+    control.update();
     renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
     Debug.renderInfo(proton, 3)
   }
 
-  createEmitter(camera: THREE.Camera, renderer: WebGLRenderer) {
-    const colors = ['#529B88', '#CDD180', '#FFFA32', '#FB6255', '#FB4A53', '#FF4E50', '#F9D423'];
-    const emitter = new Emitter();
-    emitter.rate = new Rate(new Span(3, 6), new Span(.05, .2));
-    emitter.addInitialize(new Mass(1));
-    emitter.addInitialize(new Radius(200, 400));
-    emitter.addInitialize(new Life(2, 4));
-    emitter.addInitialize(new Body(createSprite()));
-    emitter.addInitialize(new Position(new ScreenZone(camera, renderer)));
-    emitter.addBehaviour(new Alpha(0, 1, Infinity, ease.easeOutCubic));
-    emitter.addBehaviour(new Scale(2, 0, Infinity, ease.easeOutCubic));
-    emitter.addBehaviour(new Color(colors, 'random'));
-    emitter.emit();
-    return emitter;
-}
 
   initLights(scene: Scene) {
     const ambientLight = new AmbientLight(0xffffff, 0.3);
@@ -112,5 +132,16 @@ class SceneManager {
     const pointLight = new PointLight(0xffffff, 10000, 100000);
     pointLight.position.set(0, 1, 0);
     scene.add(pointLight);
+  }
+
+  createSnow() {
+    const map = new THREE.TextureLoader().load(Snow);
+    const material = new THREE.SpriteMaterial({
+        map: map,
+        transparent: true,
+        opacity: .5,
+        color: 0xffffff
+    });
+    return new THREE.Sprite(material);
   }
 }
