@@ -1,11 +1,6 @@
 # Sprite
 
-## CustomRenderer
-自定义渲染器
+## Sprite Color
+sprite color demo
 
-<code src="./demos/CustomRender.tsx"></code>
-
-
-## SpriteRender
-精灵渲染器
-<code src="./demos/SprireRenderBase.tsx"></code>
+<code src="./demos/SpriterenderColor.tsx"></code>

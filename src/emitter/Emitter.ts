@@ -59,7 +59,7 @@ export class Emitter extends Particle {
    * @param {Number} totalEmitTimes total emit times;
    * @param {String} life the life of this emitter
    */
-  emit(totalEmitTimes?: any, life?: number) {
+  emit(totalEmitTimes?: number, life?: number) {
     this.currentEmitTime = 0;
     this.totalEmitTimes = Util.initValue(totalEmitTimes, Infinity);
     if (life === true || life === "life" || life === "destroy") {
