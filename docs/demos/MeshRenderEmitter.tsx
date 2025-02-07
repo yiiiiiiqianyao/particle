@@ -32,7 +32,6 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { createSprite } from './utils';
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -156,5 +155,5 @@ class SceneManager {
     const geometry = new THREE.BoxGeometry(20, 20, 20);
     const material = new THREE.MeshLambertMaterial({ color: "#00ffcc" });
     return new THREE.Mesh(geometry, material);
-}
+  }
 }

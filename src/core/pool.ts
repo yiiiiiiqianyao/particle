@@ -28,11 +28,13 @@ export class Pool {
     }
 
     get(obj: any) {
-        var p, puid = obj.__puid || PUID.id(obj);
-        if (this.list[puid] && this.list[puid].length > 0)
-            p = this.list[puid].pop();
-        else
-            p = this.create(obj);
+        const puid = obj.__puid || PUID.id(obj);
+        let p: any;
+        if (this.list[puid] && this.list[puid].length > 0) {
+          p = this.list[puid].pop();
+        } else {
+          p = this.create(obj);
+        }
 
         p.__puid = obj.__puid || puid;
         return p;

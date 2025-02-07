@@ -2,6 +2,8 @@
 
 粒子发射器
 
+## MeshEmitter
+
 <code src="./demos/MeshRenderEmitter.tsx"></code>
 
 ## FollowEmitter

@@ -9,6 +9,7 @@ import { Proton } from "../core";
 import { Emitter } from "../emitter/Emitter";
 import { Color } from "../Behaviour/Color";
 
+// 单实例 => 多实例改造
 export class Debug {
   static _infoCon;
   static _infoType = 1;
