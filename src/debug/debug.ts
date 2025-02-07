@@ -10,6 +10,8 @@ import { Emitter } from "../emitter/Emitter";
 import { Color } from "../Behaviour/Color";
 
 export class Debug {
+  static _infoCon;
+  static _infoType = 1;
   static addEventListener(proton: Proton, fun: Function) {
     proton.addEventListener("PROTON_UPDATE", function (e) {
       fun(e);
@@ -82,7 +84,7 @@ export class Debug {
 
     this.addInfo(style);
     var str = "";
-    switch (this._infoType) {
+    switch (Debug._infoType) {
       case 2:
         str += "emitter:" + proton.emitters.length + "<br>";
         str += "em speed:" + proton.emitters[0].cID + "<br>";
@@ -100,25 +102,28 @@ export class Debug {
         str += "pool:" + proton.pool.getCount() + "<br>";
         str += "total:" + (proton.getCount() + proton.pool.getCount());
     }
-    this._infoCon.innerHTML = str;
+    Debug._infoCon.innerHTML = str;
   }
 
   static addInfo(style: any) {
     var self = this;
-    if (!this._infoCon) {
-      this._infoCon = document.createElement("div");
-      this._infoCon.style.cssText = [
-        "position:fixed;bottom:0px;left:0;cursor:pointer;",
+    if (!Debug._infoCon) {
+      Debug._infoCon = document.createElement("div");
+      Debug._infoCon.style.cssText = [
+        // "position:fixed;bottom:0px;left:0;cursor:pointer;",
+        "position:absolute;bottom:0px;left:0;cursor:pointer;",
         "opacity:0.9;z-index:10000;padding:10px;font-size:12px;",
         "width:120px;height:50px;background-color:#002;color:#0ff;",
       ].join("");
 
-      this._infoType = 1;
-      this._infoCon.addEventListener(
+
+      Debug._infoCon.addEventListener(
         "click",
         function (event) {
-          self._infoType++;
-          if (self._infoType > 3) self._infoType = 1;
+          Debug._infoType++;
+          if (Debug._infoType > 3) {
+            Debug._infoType = 1;
+          }
         },
         false
       );
@@ -140,10 +145,10 @@ export class Debug {
           color = "#0ff";
       }
 
-      this._infoCon.style["background-color"] = bg;
-      this._infoCon.style["color"] = color;
+      Debug._infoCon.style["background-color"] = bg;
+      Debug._infoCon.style["color"] = color;
     }
 
-    if (!this._infoCon.parentNode) document.body.appendChild(this._infoCon);
+    if (!Debug._infoCon.parentNode) document.body.appendChild(Debug._infoCon);
   }
 };

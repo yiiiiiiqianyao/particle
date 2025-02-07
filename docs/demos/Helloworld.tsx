@@ -38,13 +38,14 @@ export default () => {
   useEffect(() => {
     if (!containerRef.current) return;
     const sceneManager = new SceneManager(containerRef.current);
+    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
     };
   }, []);
   return (
-    <div className="wrap" style={{ height: '500px' }} ref={containerRef} />
+    <div className="wrap" style={{ height: '500px', position: 'relative' }} ref={containerRef} />
   );
 };
 
@@ -117,6 +118,7 @@ class SceneManager {
     renderer.render(scene, camera);
     control.update();
     requestAnimationFrame(this.animate);
+    Debug.renderInfo(proton, 3);
   };
 
   createEmitter(obj: any) {

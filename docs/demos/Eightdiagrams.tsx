@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
   Alpha,
-  Attraction,
   Body,
   Color,
   CrossZone,
@@ -26,7 +25,6 @@ import {
   BoxGeometry,
   Mesh,
   MeshPhongMaterial,
-  PlaneGeometry,
   PointLight,
   Scene,
   SphereGeometry,
@@ -42,13 +40,14 @@ export default () => {
   useEffect(() => {
     if (!containerRef.current) return;
     const sceneManager = new SceneManager(containerRef.current);
+    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
     };
   }, []);
   return (
-    <div className="wrap" style={{ height: '500px' }} ref={containerRef} />
+    <div className="wrap" style={{ height: '500px', position: 'relative' }} ref={containerRef} />
   );
 };
 
@@ -119,6 +118,7 @@ class SceneManager {
     camera.position.z = Math.cos(ctha) * 500;
     camera.position.y = Math.sin(ctha) * 500;
     requestAnimationFrame(this.animate);
+    Debug.renderInfo(proton, 3);
   };
 
   createEmitter(x: number, y: number, color1: string, color2: string, camera: THREE.Camera, renderer: WebGLRenderer) {
