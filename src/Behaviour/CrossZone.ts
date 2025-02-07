@@ -24,7 +24,9 @@ export class CrossZone extends Behaviour {
 
     this.zone = zone;
     this.zone.crossType = Util.initValue(crossType, "dead");
-    if (life) super.reset.call(this, life, easing);
+    if (life) {
+      super.reset.call(this, life, easing);
+    }
   }
   applyBehaviour(particle: Particle, time: number, index: number) {
     super.applyBehaviour.call(this, particle, time, index);
