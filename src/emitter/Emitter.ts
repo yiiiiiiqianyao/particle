@@ -149,7 +149,7 @@ export class Emitter extends Particle {
    * @method addBehaviour
    * @param {Behaviour} behaviour like this new Color('random')
    */
-  addBehaviour(behaviour: Behaviour | Force) {
+  addBehaviour(behaviour: any) {
     // var i = arguments.length;
     // while (i--) this.behaviours.push(arguments[i]);
     this.behaviours.push(behaviour);
