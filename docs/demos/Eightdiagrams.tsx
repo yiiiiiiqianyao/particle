@@ -1,20 +1,21 @@
 import React, { useEffect, useRef } from 'react';
 import {
+  Alpha,
   Body,
-  BoxZone,
+  Color,
+  CrossZone,
   Debug,
   Emitter,
-  Gravity,
+  Force,
   Life,
   Mass,
-  MeshRender,
-  Position,
   Proton,
   Radius,
   Rate,
-  Rotate,
   Scale,
+  ScreenZone,
   Span,
+  SpriteRender,
   Vector3D,
   Velocity,
 } from 'yiqianyao_particle';
@@ -24,17 +25,17 @@ import {
   BoxGeometry,
   Mesh,
   MeshPhongMaterial,
-  PlaneGeometry,
   PointLight,
   Scene,
   SphereGeometry,
   WebGLRenderer,
 } from 'three';
-// @ts-ignore
-import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { createSprite } from './utils';
 
 const debug = new Debug();
-
+const R = 70;
+let tha = 0;
+let ctha = 0;
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -55,13 +56,14 @@ class SceneManager {
   renderer: WebGLRenderer;
   scene: Scene;
   camera: THREE.PerspectiveCamera;
-  control: OrbitControls;
   proton!: Proton;
+  emitter1!: Emitter;
+  emitter2!: Emitter
 
   constructor(wrap: HTMLDivElement) {
     const scene = new THREE.Scene();
     this.scene = scene;
-    scene.background = new THREE.Color(0xaaccff);
+    scene.background = new THREE.Color(0x000000);
     scene.fog = new THREE.Fog(0xffffff, 1, 10000);
     const rect = wrap.getBoundingClientRect();
     const camera = new THREE.PerspectiveCamera(
@@ -72,9 +74,7 @@ class SceneManager {
     );
     camera.position.z = 500;
     this.camera = camera;
-    const control = new OrbitControls(camera, wrap);
-    this.control = control;
-    control.update();
+
 
     // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
@@ -86,59 +86,59 @@ class SceneManager {
     wrap.appendChild(renderer.domElement);
 
     this.initLights(scene);
-    this.initPlane(scene);
 
     const proton = new Proton();
     this.proton = proton;
-    const emitter1 = this.createEmitter({
-      p: {
-        x: -100,
-        y: 0,
-      },
-      Body: this.createMesh('sphere'),
-    });
-    const emitter2 = this.createEmitter({
-      p: {
-        x: 100,
-        y: 0,
-      },
-      Body: this.createMesh('cube'),
-    });
-
+    const emitter1 = this.createEmitter(R, 0, '#4F1500', '#0029FF', camera, renderer);
+    this.emitter1 = emitter1;
+    const emitter2 = this.createEmitter(-R, 0, '#004CFE', '#6600FF', camera, renderer);
+    this.emitter2 = emitter2;
     proton.addEmitter(emitter1);
     proton.addEmitter(emitter2);
-    proton.addRender(new MeshRender(scene));
+    proton.addRender(new SpriteRender(scene));
 
-    debug.drawEmitter(proton, scene, emitter1);
-    debug.drawEmitter(proton, scene, emitter2);
+    // Debug.drawEmitter(proton, scene, emitter1);
+    // Debug.drawEmitter(proton, scene, emitter2);
     this.animate();
   }
 
   animate = () => {
-    const { renderer, scene, camera, control, proton } = this;
+    const { renderer, scene, camera, proton, emitter1, emitter2 } = this;
+    tha += .13;
+    emitter1.p.x = R * Math.cos(tha);
+    emitter1.p.y = R * Math.sin(tha);
+    emitter2.p.x = R * Math.cos(tha + Math.PI / 2);
+    emitter2.p.y = R * Math.sin(tha + Math.PI / 2);
+
     proton.update();
     renderer.render(scene, camera);
-    control.update();
+
+    camera.lookAt(scene.position);
+    ctha += .02;
+    camera.position.x = Math.sin(ctha) * 500;
+    camera.position.z = Math.cos(ctha) * 500;
+    camera.position.y = Math.sin(ctha) * 500;
     requestAnimationFrame(this.animate);
     debug.renderInfo(proton, 3);
   };
 
-  createEmitter(obj: any) {
+  createEmitter(x: number, y: number, color1: string, color2: string, camera: THREE.Camera, renderer: WebGLRenderer) {
     const emitter = new Emitter();
-    emitter.rate = new Rate(new Span(5, 10), new Span(0.1, 0.25));
+    emitter.rate = new Rate(new Span(5, 7), new Span(.01, .02));
     emitter.addInitialize(new Mass(1));
-    emitter.addInitialize(new Radius(10));
-    emitter.addInitialize(new Life(2, 4));
-    emitter.addInitialize(new Body(obj.Body));
-    emitter.addInitialize(new Position(new BoxZone(100)));
-    emitter.addInitialize(new Velocity(200, new Vector3D(0, 1, 1), 30));
+    emitter.addInitialize(new Life(2));
+    emitter.addInitialize(new Body(createSprite()));
+    emitter.addInitialize(new Radius(80));
+    emitter.addInitialize(new Velocity(200, new Vector3D(0, 0, -1), 0));
 
-    emitter.addBehaviour(new Rotate('random', 'random'));
-    emitter.addBehaviour(new Scale(1, 0.1));
-    // Gravity
-    emitter.addBehaviour(new Gravity(3));
-    emitter.p.x = obj.p.x;
-    emitter.p.y = obj.p.y;
+    emitter.addBehaviour(new Alpha(1, 0));
+    emitter.addBehaviour(new Color(color1, color2));
+    emitter.addBehaviour(new Scale(1, 0.5));
+    emitter.addBehaviour(new CrossZone(new ScreenZone(camera, renderer), 'dead'));
+    emitter.addBehaviour(new Force(0, 0, -20));
+    // emitter.addBehaviour(new Attraction(new Vector3D(0, 0, 0), 5, 250));
+    emitter.p.x = x;
+    emitter.p.y = y;
     emitter.emit();
     return emitter;
   }
@@ -150,19 +150,6 @@ class SceneManager {
     const pointLight = new PointLight(0xffffff, 10000, 100000);
     pointLight.position.set(0, 1, 0);
     scene.add(pointLight);
-  }
-
-  initPlane(scene: Scene) {
-    const groundGeo = new PlaneGeometry(10000, 10000);
-    const groundMat = new MeshPhongMaterial({
-      color: 0xffffff,
-    });
-    groundMat.color.setHSL(0.095, 1, 0.75);
-
-    const ground = new Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -200;
-    scene.add(ground);
   }
 
   createMesh(geoType: 'sphere' | 'cube') {

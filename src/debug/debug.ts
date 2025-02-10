@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as THREE from "three";
 import { PointZone } from "../zone/PointZone";
 import { LineZone } from "../zone/LineZone";
@@ -8,16 +7,23 @@ import { MeshZone } from "../zone/MeshZone";
 import { Proton } from "../core";
 import { Emitter } from "../emitter/Emitter";
 import { Color } from "../Behaviour/Color";
-
+import { Zone } from "yiqianyao_particle/zone";
 export class Debug {
-  static addEventListener(proton: Proton, fun: Function) {
-    proton.addEventListener("PROTON_UPDATE", function (e) {
+  _infoCon!: HTMLElement;
+  _infoType = 1;
+  _parentNode!: HTMLElement;
+
+  setParentNode(parentNode: HTMLElement) {
+    this._parentNode = parentNode;
+  }
+  addEventListener(proton: Proton, fun: Function) {
+    proton.addEventListener("PROTON_UPDATE", function (e: any) {
       fun(e);
     });
   }
 
-  static drawZone(proton: Proton, container, zone) {
-    var geometry, material, mesh;
+  drawZone(proton: Proton, container: THREE.Scene, zone: Zone) {
+    let geometry;
 
     if (zone instanceof PointZone) {
       geometry = new THREE.SphereGeometry(15);
@@ -35,25 +41,25 @@ export class Debug {
       geometry = new THREE.SphereGeometry(zone.radius, 10, 10);
     }
 
-    material = new THREE.MeshBasicMaterial({
+    const material = new THREE.MeshBasicMaterial({
       color: "#2194ce",
       wireframe: true,
     });
-    mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
     container.add(mesh);
 
-    this.addEventListener(proton, function (e) {
+    this.addEventListener(proton, () => {
       mesh.position.set(zone.x, zone.y, zone.z);
     });
   }
 
-  static drawEmitter(proton: Proton, container: any, emitter: Emitter, color?: Color) {
-    var geometry = new THREE.OctahedronGeometry(15);
-    var material = new THREE.MeshBasicMaterial({
-      color: color || "#aaa",
+  drawEmitter(proton: Proton, container: THREE.Scene, emitter: Emitter, color?: Color) {
+    const geometry = new THREE.OctahedronGeometry(15);
+    const material = new THREE.MeshBasicMaterial({
+      color: (color || "#aaa") as THREE.ColorRepresentation,
       wireframe: true,
     });
-    var mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
     container.add(mesh);
 
     this.addEventListener(proton, function () {
@@ -66,22 +72,22 @@ export class Debug {
     });
   }
 
-  static renderInfo(proton: Proton, style: any) {
-    function getCreatedNumber(proton: Proton, type) {
-      var pool = type === "material" ? "_materialPool" : "_targetPool";
-      var renderer = proton.renderers[0];
+  renderInfo(proton: Proton, style: number | any) {
+    function getCreatedNumber(proton: Proton, type: string) {
+      const pool = type === "material" ? "_materialPool" : "_targetPool";
+      const renderer = proton.renderers[0];
       return renderer[pool].cID;
     }
 
     function getEmitterPos(proton: Proton) {
-      var e = proton.emitters[0];
+      const e = proton.emitters[0];
       return (
         Math.round(e.p.x) + "," + Math.round(e.p.y) + "," + Math.round(e.p.z)
       );
     }
 
     this.addInfo(style);
-    var str = "";
+    let str = "";
     switch (this._infoType) {
       case 2:
         str += "emitter:" + proton.emitters.length + "<br>";
@@ -103,27 +109,25 @@ export class Debug {
     this._infoCon.innerHTML = str;
   }
 
-  static addInfo(style: any) {
-    var self = this;
+  private addInfo = (style: any) => {
     if (!this._infoCon) {
       this._infoCon = document.createElement("div");
       this._infoCon.style.cssText = [
-        "position:fixed;bottom:0px;left:0;cursor:pointer;",
+        // "position:fixed;bottom:0px;left:0;cursor:pointer;",
+        "position:absolute;bottom:0px;left:0;cursor:pointer;",
         "opacity:0.9;z-index:10000;padding:10px;font-size:12px;",
         "width:120px;height:50px;background-color:#002;color:#0ff;",
       ].join("");
 
-      this._infoType = 1;
-      this._infoCon.addEventListener(
-        "click",
-        function (event) {
-          self._infoType++;
-          if (self._infoType > 3) self._infoType = 1;
-        },
-        false
-      );
 
-      var bg, color;
+      this._infoCon.addEventListener("click",() => {
+        this._infoType++;
+        if (this._infoType > 3) {
+          this._infoType = 1;
+        }
+      },false);
+
+      let bg, color;
       switch (style) {
         case 2:
           bg = "#201";
@@ -140,10 +144,16 @@ export class Debug {
           color = "#0ff";
       }
 
+      // @ts-ignore
       this._infoCon.style["background-color"] = bg;
       this._infoCon.style["color"] = color;
     }
-
-    if (!this._infoCon.parentNode) document.body.appendChild(this._infoCon);
+    if (!this._infoCon.parentNode) {
+      if(this._parentNode) {
+        this._parentNode.appendChild(this._infoCon);
+      } else {
+        document.body.appendChild(this._infoCon);
+      }
+    }
   }
 };

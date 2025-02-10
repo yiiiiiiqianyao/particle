@@ -8,22 +8,22 @@ import { EventDispatcher } from '../events/EventDispatcher'
  * the Particle class
  * @param {Number} pObj - the parameters of particle config;
  * @example
- * var p = new Particle({life:3,dead:false});
+ * const p = new Particle({life:3,dead:false});
  * or
- * var p = new Particle({mass:1,radius:100});
+ * const p = new Particle({mass:1,radius:100});
  * @constructor
  */
 export class Particle extends EventDispatcher {
   static ID = 0;
-  life;
+  life: number;
   age;
   old;
-  a;
-  v;
-  p;
+  a: Vector3D; // 加速度 acceleration
+  v: Vector3D; // 速度 velocity
+  p: Vector3D; // 位置
   mass;
   target;
-  radius;
+  radius: number; // 粒子的半径
   scale;
   rotation;
   transform;
@@ -34,6 +34,7 @@ export class Particle extends EventDispatcher {
   body;
   sleep;
   alpha;
+  dead: boolean; // 粒子是否死亡
 
   constructor(pOBJ) {
     super();
@@ -48,31 +49,31 @@ export class Particle extends EventDispatcher {
     this.reset("init");
     Util.setPrototypeByObj(this, pOBJ);
   }
-  getDirection () {
+  getDirection() {
     return Math.atan2(this.v.x, -this.v.y) * (180 / PI);
   }
-   /**
-   * @property {Number}  life               - The particle's life
-   * @property {Number}  age               - The particle's age
-   * @property {Number}  energy               - The particle's energy loss
-   * @property {Boolean}  dead               - The particle is dead?
-   * @property {Boolean}  sleep               - The particle is sleep?
-   * @property {Object}  target               - The particle's target
-   * @property {Object}  body               - The particle's body
-   * @property {Number}  mass               - The particle's mass
-   * @property {Number}  radius               - The particle's radius
-   * @property {Number}  alpha               - The particle's alpha
-   * @property {Number}  scale               - The particle's scale
-   * @property {Number}  rotation               - The particle's rotation
-   * @property {String|Number}  color               - The particle's color
-   * @property {Function}  easing               - The particle's easing
-   * @property {Vector3D}  p               - The particle's position
-   * @property {Vector3D}  v               - The particle's velocity
-   * @property {Vector3D}  a               - The particle's acceleration
-   * @property {Array}  behaviours               - The particle's behaviours array
-   * @property {Object}  transform               - The particle's transform collection
-   */
-   reset (init) {
+  /**
+  * @property {Number}  life               - The particle's life
+  * @property {Number}  age               - The particle's age
+  * @property {Number}  energy               - The particle's energy loss
+  * @property {Boolean}  dead               - The particle is dead?
+  * @property {Boolean}  sleep               - The particle is sleep?
+  * @property {Object}  target               - The particle's target
+  * @property {Object}  body               - The particle's body
+  * @property {Number}  mass               - The particle's mass
+  * @property {Number}  radius               - The particle's radius
+  * @property {Number}  alpha               - The particle's alpha
+  * @property {Number}  scale               - The particle's scale
+  * @property {Number}  rotation               - The particle's rotation
+  * @property {String|Number}  color               - The particle's color
+  * @property {Function}  easing               - The particle's easing
+  * @property {Vector3D}  p               - The particle's position
+  * @property {Vector3D}  v               - The particle's velocity
+  * @property {Vector3D}  a               - The particle's acceleration
+  * @property {Array}  behaviours               - The particle's behaviours array
+  * @property {Object}  transform               - The particle's transform collection
+  */
+  reset(init) {
     this.life = Infinity;
     this.age = 0;
     //energy loss
@@ -125,7 +126,7 @@ export class Particle extends EventDispatcher {
 
     return this;
   }
-  update (time, index) {
+  update(time, index) {
     if (!this.sleep) {
       this.age += time;
 
@@ -145,26 +146,26 @@ export class Particle extends EventDispatcher {
       this.energy = Math.max(1 - scale, 0);
     }
   }
-  addBehaviour (behaviour) {
+  addBehaviour(behaviour) {
     this.behaviours.push(behaviour);
     behaviour.initialize(this);
   }
 
-  addBehaviours (behaviours) {
+  addBehaviours(behaviours) {
     var i = behaviours.length;
     while (i--) {
       this.addBehaviour(behaviours[i]);
     }
   }
 
-  removeBehaviour (behaviour) {
+  removeBehaviour(behaviour) {
     var index = this.behaviours.indexOf(behaviour);
     if (index > -1) {
       this.behaviours.splice(index, 1);
     }
   }
 
-  removeAllBehaviours () {
+  removeAllBehaviours() {
     Util.destroyArray(this.behaviours);
   }
 
@@ -172,7 +173,7 @@ export class Particle extends EventDispatcher {
    * Destory this particle
    * @method destroy
    */
-  destroy () {
+  destroy() {
     this.removeAllBehaviours();
     this.energy = 0;
     this.dead = true;

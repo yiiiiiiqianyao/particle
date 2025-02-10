@@ -1,6 +1,7 @@
 // @ts-nocheck
 import { Behaviour } from './Behaviour';
 import { Vector3D } from '../math/Vector3D'
+import { Particle } from 'particle/core';
 /**
  * The Behaviour class is the base for the other Behaviour
  *
@@ -18,7 +19,7 @@ export class Force extends Behaviour {
     this.force = this.normalizeForce(new Vector3D(fx, fy, fz));
     this.force.id = Math.random();
   };
-  applyBehaviour(particle, time, index) {
+  applyBehaviour(particle: Particle, time, index) {
     super.applyBehaviour.call(this, particle, time, index);
     particle.a.add(this.force);
   }

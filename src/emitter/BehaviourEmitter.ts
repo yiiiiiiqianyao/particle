@@ -38,7 +38,7 @@ export class BehaviourEmitter extends Emitter {
    * @param {Behaviour} behaviour a behaviour
    */
   removeSelfBehaviour(behaviour: Behaviour) {
-    var index = this.selfBehaviours.indexOf(behaviour);
+    const index = this.selfBehaviours.indexOf(behaviour);
     if (index > -1) this.selfBehaviours.splice(index, 1);
   };
 
@@ -46,9 +46,8 @@ export class BehaviourEmitter extends Emitter {
     super.update.call(this, time);
 
     if (!this.sleep) {
-      var length = this.selfBehaviours.length,
-        i;
-      for (i = 0; i < length; i++) {
+      const length = this.selfBehaviours.length;
+      for (let i = 0; i < length; i++) {
         this.selfBehaviours[i].applyBehaviour(this, time, i);
       }
     }

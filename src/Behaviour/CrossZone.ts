@@ -4,6 +4,9 @@ import { Zone } from "../zone/Zone";
 import { EaseFunc } from "../ease/ease";
 import { Particle } from "../core/Particle";
 
+/**
+ * 用于处理 Particle 穿越一定区域时候的行为
+ */
 export class CrossZone extends Behaviour {
   zone!: Zone;
   constructor(a: any, b: any, life?: number, easing?: EaseFunc) {
@@ -13,7 +16,7 @@ export class CrossZone extends Behaviour {
     this.name = "CrossZone";
   }
   reset(a: any, b: any, life?: number, easing?: EaseFunc) {
-    var zone, crossType;
+    let zone, crossType;
     if (typeof a === "string") {
       crossType = a;
       zone = b;
@@ -24,7 +27,9 @@ export class CrossZone extends Behaviour {
 
     this.zone = zone;
     this.zone.crossType = Util.initValue(crossType, "dead");
-    if (life) super.reset.call(this, life, easing);
+    if (life) {
+      super.reset.call(this, life, easing);
+    }
   }
   applyBehaviour(particle: Particle, time: number, index: number) {
     super.applyBehaviour.call(this, particle, time, index);

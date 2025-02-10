@@ -1,35 +1,32 @@
 import React, { useEffect, useRef } from 'react';
 import {
   Body,
-  BoxZone,
+  Color,
   Debug,
+  ease,
   Emitter,
   Gravity,
   Life,
   Mass,
-  MeshRender,
   Position,
   Proton,
-  Radius,
+  RandomDrift,
   Rate,
-  Rotate,
   Scale,
   Span,
+  SphereZone,
+  SpriteRender,
   Vector3D,
   Velocity,
 } from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
   AmbientLight,
-  BoxGeometry,
-  Mesh,
-  MeshPhongMaterial,
-  PlaneGeometry,
   PointLight,
   Scene,
-  SphereGeometry,
   WebGLRenderer,
 } from 'three';
+import { createSprite } from './utils';
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -55,14 +52,12 @@ class SceneManager {
   renderer: WebGLRenderer;
   scene: Scene;
   camera: THREE.PerspectiveCamera;
-  control: OrbitControls;
   proton!: Proton;
-
+  control: OrbitControls;
   constructor(wrap: HTMLDivElement) {
     const scene = new THREE.Scene();
     this.scene = scene;
-    scene.background = new THREE.Color(0xaaccff);
-    scene.fog = new THREE.Fog(0xffffff, 1, 10000);
+    scene.background = new THREE.Color(0x000000);
     const rect = wrap.getBoundingClientRect();
     const camera = new THREE.PerspectiveCamera(
       70,
@@ -86,62 +81,40 @@ class SceneManager {
     wrap.appendChild(renderer.domElement);
 
     this.initLights(scene);
-    this.initPlane(scene);
 
     const proton = new Proton();
     this.proton = proton;
-    const emitter1 = this.createEmitter({
-      p: {
-        x: -100,
-        y: 0,
-      },
-      Body: this.createMesh('sphere'),
-    });
-    const emitter2 = this.createEmitter({
-      p: {
-        x: 100,
-        y: 0,
-      },
-      Body: this.createMesh('cube'),
-    });
-
-    proton.addEmitter(emitter1);
-    proton.addEmitter(emitter2);
-    proton.addRender(new MeshRender(scene));
-
-    debug.drawEmitter(proton, scene, emitter1);
-    debug.drawEmitter(proton, scene, emitter2);
+    proton.addEmitter(this.createEmitter());
+    proton.addRender(new SpriteRender(scene));
     this.animate();
   }
 
   animate = () => {
-    const { renderer, scene, camera, control, proton } = this;
+    const { renderer, scene, camera, proton, control } = this;
     proton.update();
-    renderer.render(scene, camera);
     control.update();
+    renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
-    debug.renderInfo(proton, 3);
-  };
+    debug.renderInfo(proton, 3)
+  }
 
-  createEmitter(obj: any) {
+  createEmitter() {
     const emitter = new Emitter();
-    emitter.rate = new Rate(new Span(5, 10), new Span(0.1, 0.25));
+    emitter.rate = new Rate(new Span(10, 15), new Span(.05, .1));
+    emitter.addInitialize(new Body(createSprite()));
     emitter.addInitialize(new Mass(1));
-    emitter.addInitialize(new Radius(10));
-    emitter.addInitialize(new Life(2, 4));
-    emitter.addInitialize(new Body(obj.Body));
-    emitter.addInitialize(new Position(new BoxZone(100)));
-    emitter.addInitialize(new Velocity(200, new Vector3D(0, 1, 1), 30));
-
-    emitter.addBehaviour(new Rotate('random', 'random'));
-    emitter.addBehaviour(new Scale(1, 0.1));
-    // Gravity
-    emitter.addBehaviour(new Gravity(3));
-    emitter.p.x = obj.p.x;
-    emitter.p.y = obj.p.y;
+    emitter.addInitialize(new Life(1, 3));
+    emitter.addInitialize(new Position(new SphereZone(20)));
+    emitter.addInitialize(new Velocity(new Span(500, 800), new Vector3D(0, 1, 0), 30));
+    emitter.addBehaviour(new RandomDrift(10, 10, 10, .05));
+    emitter.addBehaviour(new Scale(new Span(2, 3.5), 0));
+    emitter.addBehaviour(new Gravity(6));
+    emitter.addBehaviour(new Color('#FF0026', ['#ffff00', '#ffff11'], Infinity, ease.easeOutSine));
+    emitter.p.x = 0;
+    emitter.p.y = -150;
     emitter.emit();
     return emitter;
-  }
+}
 
   initLights(scene: Scene) {
     const ambientLight = new AmbientLight(0xffffff, 0.3);
@@ -150,34 +123,5 @@ class SceneManager {
     const pointLight = new PointLight(0xffffff, 10000, 100000);
     pointLight.position.set(0, 1, 0);
     scene.add(pointLight);
-  }
-
-  initPlane(scene: Scene) {
-    const groundGeo = new PlaneGeometry(10000, 10000);
-    const groundMat = new MeshPhongMaterial({
-      color: 0xffffff,
-    });
-    groundMat.color.setHSL(0.095, 1, 0.75);
-
-    const ground = new Mesh(groundGeo, groundMat);
-    ground.rotation.x = -Math.PI / 2;
-    ground.position.y = -200;
-    scene.add(ground);
-  }
-
-  createMesh(geoType: 'sphere' | 'cube') {
-    if (geoType == 'sphere') {
-      const geometry = new SphereGeometry(10, 8, 8);
-      const material = new MeshPhongMaterial({
-        color: '#ff0000',
-      });
-      return new Mesh(geometry, material);
-    } else {
-      const geometry = new BoxGeometry(20, 20, 20);
-      const material = new MeshPhongMaterial({
-        color: '#00ffcc',
-      });
-      return new Mesh(geometry, material);
-    }
   }
 }

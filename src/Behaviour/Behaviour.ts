@@ -108,7 +108,7 @@ export class Behaviour {
       return;
     }
 
-    var scale = this.easing(particle.age / particle.life);
+    const scale = this.easing(particle.age / particle.life);
     this.energy = Math.max(1 - scale, 0);
   }
 

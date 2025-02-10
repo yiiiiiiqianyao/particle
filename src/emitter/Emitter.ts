@@ -59,7 +59,7 @@ export class Emitter extends Particle {
    * @param {Number} totalEmitTimes total emit times;
    * @param {String} life the life of this emitter
    */
-  emit(totalEmitTimes?: any, life?: any) {
+  emit(totalEmitTimes?: number, life?: number) {
     this.currentEmitTime = 0;
     this.totalEmitTimes = Util.initValue(totalEmitTimes, Infinity);
     if (life === true || life === "life" || life === "destroy") {
@@ -149,7 +149,7 @@ export class Emitter extends Particle {
    * @method addBehaviour
    * @param {Behaviour} behaviour like this new Color('random')
    */
-  addBehaviour(behaviour: Behaviour | Force) {
+  addBehaviour(behaviour: any) {
     // var i = arguments.length;
     // while (i--) this.behaviours.push(arguments[i]);
     this.behaviours.push(behaviour);
@@ -177,7 +177,7 @@ export class Emitter extends Particle {
 
     var i = this.particles.length;
     while (i--) {
-      var particle = this.particles[i];
+      const particle = this.particles[i];
       particle.update(time, i);
       Proton.integrator.integrate(particle, time, damping);
 
@@ -211,8 +211,9 @@ export class Emitter extends Particle {
     this.emitting(time);
     this.integrate(time);
 
-    var particle,
-      i = this.particles.length;
+    // 剔除死亡的粒子
+    let particle;
+    let i = this.particles.length;
     while (i--) {
       particle = this.particles[i];
       if (particle.dead) {

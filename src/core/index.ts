@@ -17,6 +17,8 @@ import { Emitter } from "../emitter/Emitter";
  */
 export class Proton extends EventDispatcher {
   static integrator;
+  pool;
+  renderers: any[];
   emitters: Emitter[];
   constructor(preParticles?: any, integrationType?: any) {
     super();
@@ -58,13 +60,13 @@ export class Proton extends EventDispatcher {
    * @method addEmitter
    * @param {Emitter} emitter
    */
-  addEmitter(emitter) {
+  addEmitter(emitter: Emitter) {
     this.emitters.push(emitter);
     emitter.parent = this;
     this.dispatchEvent("EMITTER_ADDED", emitter);
   }
 
-  removeEmitter(emitter) {
+  removeEmitter(emitter: Emitter) {
     if (emitter.parent !== this) return;
 
     this.emitters.splice(this.emitters.indexOf(emitter), 1);
