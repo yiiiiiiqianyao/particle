@@ -1,9 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import {
-  Alpha,
   Body,
   Color,
-  CrossZone,
   Debug,
   Emitter,
   Gravity,
@@ -15,13 +13,9 @@ import {
   Radius,
   RandomDrift,
   Rate,
-  Scale,
-  ScreenZone,
   Span,
   SpriteRender,
-  Vector3D,
-  Velocity,
-} from 'particle';
+} from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
   AmbientLight,

@@ -16,7 +16,7 @@ import {
   ScreenZone,
   Span,
   SpriteRender,
-} from 'particle';
+} from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
   AmbientLight,

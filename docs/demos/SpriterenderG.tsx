@@ -18,7 +18,7 @@ import {
   SpriteRender,
   Vector3D,
   Velocity,
-} from 'particle';
+} from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
   AmbientLight,

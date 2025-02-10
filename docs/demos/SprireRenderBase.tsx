@@ -4,12 +4,9 @@ import {
   Body,
   BoxZone,
   Color,
-  CrossZone,
   Debug,
   ease,
   Emitter,
-  FollowEmitter,
-  Force,
   Life,
   Mass,
   Position,
@@ -18,12 +15,11 @@ import {
   Rate,
   Rotate,
   Scale,
-  ScreenZone,
   Span,
   SpriteRender,
   Vector3D,
   Velocity,
-} from 'particle';
+} from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
   AmbientLight,

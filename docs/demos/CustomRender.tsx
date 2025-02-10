@@ -17,7 +17,7 @@ import {
   Span,
   Vector3D,
   Velocity,
-} from 'particle';
+} from 'yiqianyao_particle';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { AmbientLight, PointLight, Scene, WebGLRenderer } from 'three';

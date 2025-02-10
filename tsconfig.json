@@ -8,9 +8,9 @@
     "baseUrl": "./",
     "paths": {
       "@@/*": [".dumi/tmp/*"],
-      "particle": ["src"],
-      "particle/*": ["src/*", "*"]
+      "yiqianyao_particle": ["src"],
+      "yiqianyao_particle/*": ["src/*", "*"]
     }
   },
-  "include": [".dumirc.ts", "src/**/*", "docs/**/*"]
+  "include": [".dumirc.ts", "src/**/*", "./docs/**/*"]
 }
