@@ -4,10 +4,15 @@ import { Vector3D } from "../math/Vector3D";
  * @constructor
  */
 export class Zone {
+  x!: number;
+  y!: number;
+  z!: number;
   vector: Vector3D;
   random: number;
+  radius!: number;
   crossType: string;
   log: boolean;
+  geometry: any;
   constructor() {
     this.vector = new Vector3D(0, 0, 0);
     this.random = 0;

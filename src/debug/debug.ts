@@ -1,4 +1,3 @@
-// @ts-nocheck
 import * as THREE from "three";
 import { PointZone } from "../zone/PointZone";
 import { LineZone } from "../zone/LineZone";
@@ -8,23 +7,22 @@ import { MeshZone } from "../zone/MeshZone";
 import { Proton } from "../core";
 import { Emitter } from "../emitter/Emitter";
 import { Color } from "../Behaviour/Color";
-
-// 单实例 => 多实例改造
+import { Zone } from "yiqianyao_particle/zone";
 export class Debug {
-  _infoCon;
+  _infoCon!: HTMLElement;
   _infoType = 1;
-  _parentNode: HTMLElement;
+  _parentNode!: HTMLElement;
 
   setParentNode(parentNode: HTMLElement) {
     this._parentNode = parentNode;
   }
   addEventListener(proton: Proton, fun: Function) {
-    proton.addEventListener("PROTON_UPDATE", function (e) {
+    proton.addEventListener("PROTON_UPDATE", function (e: any) {
       fun(e);
     });
   }
 
-  drawZone(proton: Proton, container, zone) {
+  drawZone(proton: Proton, container: THREE.Scene, zone: Zone) {
     let geometry;
 
     if (zone instanceof PointZone) {
@@ -50,15 +48,15 @@ export class Debug {
     const mesh = new THREE.Mesh(geometry, material);
     container.add(mesh);
 
-    this.addEventListener(proton, function (e) {
+    this.addEventListener(proton, () => {
       mesh.position.set(zone.x, zone.y, zone.z);
     });
   }
 
-  drawEmitter(proton: Proton, container: any, emitter: Emitter, color?: Color) {
+  drawEmitter(proton: Proton, container: THREE.Scene, emitter: Emitter, color?: Color) {
     const geometry = new THREE.OctahedronGeometry(15);
     const material = new THREE.MeshBasicMaterial({
-      color: color || "#aaa",
+      color: (color || "#aaa") as THREE.ColorRepresentation,
       wireframe: true,
     });
     const mesh = new THREE.Mesh(geometry, material);
@@ -75,7 +73,7 @@ export class Debug {
   }
 
   renderInfo(proton: Proton, style: number | any) {
-    function getCreatedNumber(proton: Proton, type) {
+    function getCreatedNumber(proton: Proton, type: string) {
       const pool = type === "material" ? "_materialPool" : "_targetPool";
       const renderer = proton.renderers[0];
       return renderer[pool].cID;
@@ -122,16 +120,12 @@ export class Debug {
       ].join("");
 
 
-      this._infoCon.addEventListener(
-        "click",
-        (event) => {
-          this._infoType++;
-          if (this._infoType > 3) {
-            this._infoType = 1;
-          }
-        },
-        false
-      );
+      this._infoCon.addEventListener("click",() => {
+        this._infoType++;
+        if (this._infoType > 3) {
+          this._infoType = 1;
+        }
+      },false);
 
       let bg, color;
       switch (style) {
@@ -150,6 +144,7 @@ export class Debug {
           color = "#0ff";
       }
 
+      // @ts-ignore
       this._infoCon.style["background-color"] = bg;
       this._infoCon.style["color"] = color;
     }

@@ -17,6 +17,8 @@ import { Emitter } from "../emitter/Emitter";
  */
 export class Proton extends EventDispatcher {
   static integrator;
+  pool;
+  renderers: any[];
   emitters: Emitter[];
   constructor(preParticles?: any, integrationType?: any) {
     super();
