@@ -54,7 +54,7 @@ class SceneManager {
   scene: Scene;
   camera: THREE.PerspectiveCamera;
   proton!: Proton;
-  control: OrbitControls;
+  // control: OrbitControls;
   clock!: THREE.Clock;
   emitter: Emitter;
   color1!: THREE.Color;
@@ -70,11 +70,11 @@ class SceneManager {
       0.1,
       10000,
     );
-    camera.position.z = 500;
+    camera.position.z = 1000;
     this.camera = camera;
-    const control = new OrbitControls(camera, wrap);
-    this.control = control;
-    control.update();
+    // const control = new OrbitControls(camera, wrap);
+    // this.control = control;
+    // control.update();
 
     // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
@@ -120,12 +120,10 @@ class SceneManager {
   }
 
   animate = () => {
-    const { renderer, scene, camera, proton, control, clock, emitter, color1, color2 } = this;
+    const { renderer, scene, camera, proton, clock, emitter, color1, color2 } = this;
     proton.update();
-    control.update();
     renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
-    debug.renderInfo(proton, 3)
 
     this.changeParticleColor(color1, color2);
     this.protonUpdate(clock, proton);
@@ -137,7 +135,7 @@ class SceneManager {
   }
 
   initLights(scene: Scene) {
-    const ambientLight = new AmbientLight(0xffffff, 0.3);
+    const ambientLight = new AmbientLight(0xffffff);
     scene.add(ambientLight);
 
     const pointLight = new PointLight(0xffffff, 10000, 100000);
@@ -157,7 +155,7 @@ class SceneManager {
 
   moveEmitter(emitter: Emitter){
     tha += Math.PI / 150;
-    var p = 300 * Math.sin(2 * tha);
+    const p = 300 * Math.sin(2 * tha);
     emitter.p.x = p * Math.cos(tha);
     emitter.p.y = p * Math.sin(tha);
     emitter.p.z = p * Math.tan(tha) / 2;

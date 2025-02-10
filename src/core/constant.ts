@@ -20,3 +20,13 @@ export const PROTON_UPDATE = "protonUpdate";
 export const PROTON_UPDATE_AFTER = "protonUpdateAfter";
 export const EMITTER_ADDED = "emitterAdded";
 export const EMITTER_REMOVED = "emitterRemoved";
+
+export enum Axis {
+  X = 'x',
+  Y = 'y',
+  Z = 'z',
+  // XY = 'xy',
+  // XZ = 'xz',
+  // YZ = 'yz',
+  // XYZ = 'xyz',
+}

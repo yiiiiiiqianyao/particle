@@ -136,14 +136,14 @@ class SceneManager {
     emitter.rate = new Rate(new Span(4, 8), new Span(0.2, 0.5));
     emitter.addInitialize(new Mass(1));
     emitter.addInitialize(new Radius(100));
-    emitter.addInitialize(new Life(2, 4));
+    emitter.addInitialize(new Life(3, 6));
     emitter.addInitialize(new Velocity(400, new Vector3D(0, 1, 0), 60));
 
     emitter.addBehaviour(new Rotate('random', 'random'));
     emitter.addBehaviour(new Scale(1, 0.1));
     emitter.addBehaviour(new Gravity(6));
 
-    var zone = new BoxZone(600);
+    const zone = new BoxZone(600);
     zone.friction = 0.95;
     zone.max = 7;
     emitter.addBehaviour(new CrossZone(zone, 'bound'));

@@ -34,6 +34,7 @@ export class Particle extends EventDispatcher {
   body;
   sleep;
   alpha;
+  dead: boolean;
 
   constructor(pOBJ) {
     super();

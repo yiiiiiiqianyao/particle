@@ -2,9 +2,10 @@
 import { Zone } from "./Zone";
 import { THREEUtil } from "../utils/THREEUtil";
 import { Vector3D } from '../math/Vector3D';
+import { Camera, WebGLRenderer } from "three";
 
 /**
- * ScreenZone is a 3d line zone
+ * ScreenZone is a 3d line zone 屏幕区域的 zone
  * @param {Number|Vector3D} x1 - the line's start point of x value or a Vector3D Object
  * @param {Number|Vector3D} y1 - the line's start point of y value or a Vector3D Object
  * @param {Number} z1 - the line's start point of z value
@@ -19,9 +20,10 @@ import { Vector3D } from '../math/Vector3D';
  * @constructor
  */
 export class ScreenZone extends Zone {
-  constructor(camera, renderer, dis?: number, dir?: string) {
+  camera: Camera;
+  renderer: WebGLRenderer;
+  constructor(camera?: Camera, renderer?: WebGLRenderer, dis?: number, dir?: string) {
     super();
-
     this.camera = camera;
     this.renderer = renderer;
     this.dis = dis || 20;
@@ -43,13 +45,18 @@ export class ScreenZone extends Zone {
     };
   })();
 
+
+  /**
+   * particle 粒子超出屏幕区域的时候 设置为死亡状态
+   * @param particle
+   */
   _dead(particle) {
-    var pos = THREEUtil.toScreenPos(
+    const pos = THREEUtil.toScreenPos(
       particle.p,
       this.camera,
       this.renderer.domElement
     );
-    var canvas = this.renderer.domElement;
+    const canvas = this.renderer.domElement;
 
     if (pos.y + particle.radius < -this.dis && this.d1) {
       particle.dead = true;

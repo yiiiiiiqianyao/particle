@@ -1,4 +1,5 @@
 import { Vector3D } from "../math/Vector3D";
+import { Particle } from "yiqianyao_particle/core";
 /**
  * Zone is a base class.
  * @constructor
@@ -7,6 +8,7 @@ export class Zone {
   x!: number;
   y!: number;
   z!: number;
+  friction!: number;
   vector: Vector3D;
   random: number;
   radius!: number;
@@ -19,27 +21,31 @@ export class Zone {
     this.crossType = "dead";
     this.log = true;
   }
-  getPosition(): any {
-    return null;
-  }
+  getPosition(): Vector3D | null { return null };
 
   crossing(particle: any) {
     switch (this.crossType) {
       case "bound":
         this._bound(particle);
         break;
-
       case "cross":
         this._cross(particle);
         break;
-
       case "dead":
         this._dead(particle);
         break;
     }
   }
 
-  _dead(particle: any) {}
-  _bound(particle: any) {}
-  _cross(particl: any) {}
+  /**
+   * particle 粒子是否还在 zone 的区域内
+   * @param particle
+   */
+  _dead(particle: Particle) {}
+  /**
+   * 粒子在 zone 所在的包围盒内 运动速度按照摩擦系数衰减
+   * @param particle
+   */
+  _bound(particle: Particle) {}
+  _cross(particle: Particle) {}
 }
