@@ -8,22 +8,22 @@ import { EventDispatcher } from '../events/EventDispatcher'
  * the Particle class
  * @param {Number} pObj - the parameters of particle config;
  * @example
- * var p = new Particle({life:3,dead:false});
+ * const p = new Particle({life:3,dead:false});
  * or
- * var p = new Particle({mass:1,radius:100});
+ * const p = new Particle({mass:1,radius:100});
  * @constructor
  */
 export class Particle extends EventDispatcher {
   static ID = 0;
-  life;
+  life: number;
   age;
   old;
-  a; // 加速度 acceleration
-  v;
-  p; // 位置
+  a: Vector3D; // 加速度 acceleration
+  v: Vector3D; // 速度 velocity
+  p: Vector3D; // 位置
   mass;
   target;
-  radius;
+  radius: number; // 粒子的半径
   scale;
   rotation;
   transform;
@@ -34,7 +34,7 @@ export class Particle extends EventDispatcher {
   body;
   sleep;
   alpha;
-  dead: boolean;
+  dead: boolean; // 粒子是否死亡
 
   constructor(pOBJ) {
     super();
