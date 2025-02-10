@@ -28,12 +28,14 @@ import {
 } from 'three';
 import { createSprite } from './utils';
 
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -76,7 +78,6 @@ class SceneManager {
 
     this.initLights(scene);
 
-
     const proton = new Proton();
     this.proton = proton;
     const emitter = new FollowEmitter();
@@ -106,6 +107,7 @@ class SceneManager {
     const { renderer, scene, camera, proton } = this;
     proton.update();
     renderer.render(scene, camera);
+    debug.renderInfo(proton, 3);
     requestAnimationFrame(this.animate);
   };
 

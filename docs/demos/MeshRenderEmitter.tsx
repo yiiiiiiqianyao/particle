@@ -29,12 +29,14 @@ import {
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -106,7 +108,7 @@ class SceneManager {
     spring.reset(x, y, 100);
     control.update();
 
-    Debug.renderInfo(proton, 3);
+    debug.renderInfo(proton, 3);
 
     requestAnimationFrame(this.animate);
   };
@@ -131,8 +133,8 @@ class SceneManager {
     emitter.p.y = 0;
     emitter.emit();
 
-    Debug.drawZone(proton,scene,zone2);
-    Debug.drawEmitter(proton, scene, emitter);
+    debug.drawZone(proton,scene,zone2);
+    debug.drawEmitter(proton, scene, emitter);
     return { emitter, spring };
 }
 

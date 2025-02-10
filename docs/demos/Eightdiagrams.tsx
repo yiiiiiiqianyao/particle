@@ -32,6 +32,7 @@ import {
 } from 'three';
 import { createSprite } from './utils';
 
+const debug = new Debug();
 const R = 70;
 let tha = 0;
 let ctha = 0;
@@ -39,8 +40,8 @@ export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -118,7 +119,7 @@ class SceneManager {
     camera.position.z = Math.cos(ctha) * 500;
     camera.position.y = Math.sin(ctha) * 500;
     requestAnimationFrame(this.animate);
-    Debug.renderInfo(proton, 3);
+    debug.renderInfo(proton, 3);
   };
 
   createEmitter(x: number, y: number, color1: string, color2: string, camera: THREE.Camera, renderer: WebGLRenderer) {

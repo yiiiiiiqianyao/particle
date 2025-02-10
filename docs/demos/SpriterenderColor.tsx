@@ -26,12 +26,14 @@ import {
 } from 'three';
 import { createSprite } from './utils';
 
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -62,8 +64,6 @@ class SceneManager {
     camera.position.z = 500;
     this.camera = camera;
 
-
-    // 创建渲染器
     const renderer = new THREE.WebGLRenderer({
       antialias: true,
       alpha: true,
@@ -85,8 +85,8 @@ class SceneManager {
     const { renderer, scene, camera, proton } = this;
     proton.update();
     renderer.render(scene, camera);
+    debug.renderInfo(proton, 3)
     requestAnimationFrame(this.animate);
-    Debug.renderInfo(proton, 3)
   }
 
   createEmitter(camera: THREE.Camera, renderer: WebGLRenderer) {

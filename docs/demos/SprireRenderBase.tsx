@@ -29,12 +29,14 @@ import {
 } from 'three';
 import { createSprite } from './utils';
 
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -84,7 +86,7 @@ class SceneManager {
     proton.addEmitter(this.createEmitter());
     proton.addRender(new SpriteRender(scene));
     const zone2 = new BoxZone(400);
-    Debug.drawZone(proton, scene, zone2);
+    debug.drawZone(proton, scene, zone2);
 
     this.animate();
   }
@@ -97,8 +99,8 @@ class SceneManager {
     camera.lookAt(scene.position);
     camera.position.x = Math.sin(tha) * 500;
     camera.position.z = Math.cos(tha) * 500;
+    debug.renderInfo(proton, 3);
     requestAnimationFrame(this.animate);
-
   }
 
   createEmitter() {

@@ -11,16 +11,21 @@ import { Color } from "../Behaviour/Color";
 
 // 单实例 => 多实例改造
 export class Debug {
-  static _infoCon;
-  static _infoType = 1;
-  static addEventListener(proton: Proton, fun: Function) {
+  _infoCon;
+  _infoType = 1;
+  _parentNode: HTMLElement;
+
+  setParentNode(parentNode: HTMLElement) {
+    this._parentNode = parentNode;
+  }
+  addEventListener(proton: Proton, fun: Function) {
     proton.addEventListener("PROTON_UPDATE", function (e) {
       fun(e);
     });
   }
 
-  static drawZone(proton: Proton, container, zone) {
-    var geometry, material, mesh;
+  drawZone(proton: Proton, container, zone) {
+    let geometry;
 
     if (zone instanceof PointZone) {
       geometry = new THREE.SphereGeometry(15);
@@ -38,11 +43,11 @@ export class Debug {
       geometry = new THREE.SphereGeometry(zone.radius, 10, 10);
     }
 
-    material = new THREE.MeshBasicMaterial({
+    const material = new THREE.MeshBasicMaterial({
       color: "#2194ce",
       wireframe: true,
     });
-    mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
     container.add(mesh);
 
     this.addEventListener(proton, function (e) {
@@ -50,13 +55,13 @@ export class Debug {
     });
   }
 
-  static drawEmitter(proton: Proton, container: any, emitter: Emitter, color?: Color) {
-    var geometry = new THREE.OctahedronGeometry(15);
-    var material = new THREE.MeshBasicMaterial({
+  drawEmitter(proton: Proton, container: any, emitter: Emitter, color?: Color) {
+    const geometry = new THREE.OctahedronGeometry(15);
+    const material = new THREE.MeshBasicMaterial({
       color: color || "#aaa",
       wireframe: true,
     });
-    var mesh = new THREE.Mesh(geometry, material);
+    const mesh = new THREE.Mesh(geometry, material);
     container.add(mesh);
 
     this.addEventListener(proton, function () {
@@ -69,23 +74,23 @@ export class Debug {
     });
   }
 
-  static renderInfo(proton: Proton, style: number | any) {
+  renderInfo(proton: Proton, style: number | any) {
     function getCreatedNumber(proton: Proton, type) {
-      var pool = type === "material" ? "_materialPool" : "_targetPool";
-      var renderer = proton.renderers[0];
+      const pool = type === "material" ? "_materialPool" : "_targetPool";
+      const renderer = proton.renderers[0];
       return renderer[pool].cID;
     }
 
     function getEmitterPos(proton: Proton) {
-      var e = proton.emitters[0];
+      const e = proton.emitters[0];
       return (
         Math.round(e.p.x) + "," + Math.round(e.p.y) + "," + Math.round(e.p.z)
       );
     }
 
     this.addInfo(style);
-    var str = "";
-    switch (Debug._infoType) {
+    let str = "";
+    switch (this._infoType) {
       case 2:
         str += "emitter:" + proton.emitters.length + "<br>";
         str += "em speed:" + proton.emitters[0].cID + "<br>";
@@ -103,14 +108,13 @@ export class Debug {
         str += "pool:" + proton.pool.getCount() + "<br>";
         str += "total:" + (proton.getCount() + proton.pool.getCount());
     }
-    Debug._infoCon.innerHTML = str;
+    this._infoCon.innerHTML = str;
   }
 
-  static addInfo(style: any) {
-    var self = this;
-    if (!Debug._infoCon) {
-      Debug._infoCon = document.createElement("div");
-      Debug._infoCon.style.cssText = [
+  private addInfo = (style: any) => {
+    if (!this._infoCon) {
+      this._infoCon = document.createElement("div");
+      this._infoCon.style.cssText = [
         // "position:fixed;bottom:0px;left:0;cursor:pointer;",
         "position:absolute;bottom:0px;left:0;cursor:pointer;",
         "opacity:0.9;z-index:10000;padding:10px;font-size:12px;",
@@ -118,18 +122,18 @@ export class Debug {
       ].join("");
 
 
-      Debug._infoCon.addEventListener(
+      this._infoCon.addEventListener(
         "click",
-        function (event) {
-          Debug._infoType++;
-          if (Debug._infoType > 3) {
-            Debug._infoType = 1;
+        (event) => {
+          this._infoType++;
+          if (this._infoType > 3) {
+            this._infoType = 1;
           }
         },
         false
       );
 
-      var bg, color;
+      let bg, color;
       switch (style) {
         case 2:
           bg = "#201";
@@ -146,10 +150,15 @@ export class Debug {
           color = "#0ff";
       }
 
-      Debug._infoCon.style["background-color"] = bg;
-      Debug._infoCon.style["color"] = color;
+      this._infoCon.style["background-color"] = bg;
+      this._infoCon.style["color"] = color;
     }
-
-    if (!Debug._infoCon.parentNode) document.body.appendChild(Debug._infoCon);
+    if (!this._infoCon.parentNode) {
+      if(this._parentNode) {
+        this._parentNode.appendChild(this._infoCon);
+      } else {
+        document.body.appendChild(this._infoCon);
+      }
+    }
   }
 };

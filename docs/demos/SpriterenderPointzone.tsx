@@ -24,17 +24,18 @@ import {
   Scene,
   WebGLRenderer,
 } from 'three';
-import { createSprite } from './utils';
+
+const debug = new Debug();
+
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
-      // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
     };
   }, []);
@@ -124,7 +125,7 @@ class SceneManager {
     control.update();
     renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
-    Debug.renderInfo(proton, 3)
+    debug.renderInfo(proton, 3)
 
     this.changeParticleColor(color1, color2);
     this.protonUpdate(clock, proton);
@@ -132,7 +133,7 @@ class SceneManager {
     camera.lookAt(scene.position);
     this.moveEmitter(emitter);
     this.rotateCamera(camera);
-    Debug.renderInfo(proton, 3);
+    debug.renderInfo(proton, 3);
   }
 
   initLights(scene: Scene) {

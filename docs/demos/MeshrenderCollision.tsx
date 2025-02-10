@@ -25,12 +25,15 @@ import {
 } from 'three';
 // @ts-ignore
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -40,7 +43,6 @@ export default () => {
     <div className="wrap" style={{ height: '500px', position: 'relative' }} ref={containerRef} />
   );
 };
-let tha = 0;
 class SceneManager {
   renderer: WebGLRenderer;
   scene: Scene;
@@ -104,6 +106,7 @@ class SceneManager {
     proton.update();
     renderer.render(scene, camera);
     control.update();
+    debug.renderInfo(proton, 3);
     requestAnimationFrame(this.animate);
   }
 

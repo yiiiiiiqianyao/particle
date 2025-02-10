@@ -30,12 +30,15 @@ import {
 import Snow from '../assets/snow.png';
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -117,10 +120,8 @@ class SceneManager {
     control.update();
     renderer.render(scene, camera);
     requestAnimationFrame(this.animate);
-    Debug.renderInfo(proton, 3)
+    debug.renderInfo(proton, 3)
   }
-
-
   initLights(scene: Scene) {
     const ambientLight = new AmbientLight(0xffffff, 0.3);
     scene.add(ambientLight);

@@ -33,12 +33,14 @@ import {
 // @ts-ignore
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+const debug = new Debug();
+
 export default () => {
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!containerRef.current) return;
+    debug.setParentNode(containerRef.current);
     const sceneManager = new SceneManager(containerRef.current);
-    Debug?._infoCon && containerRef.current.appendChild(Debug._infoCon);
     return () => {
       // 清理操作
       containerRef.current?.removeChild(sceneManager.renderer.domElement);
@@ -107,8 +109,8 @@ class SceneManager {
     proton.addEmitter(emitter2);
     proton.addRender(new MeshRender(scene));
 
-    Debug.drawEmitter(proton, scene, emitter1);
-    Debug.drawEmitter(proton, scene, emitter2);
+    debug.drawEmitter(proton, scene, emitter1);
+    debug.drawEmitter(proton, scene, emitter2);
     this.animate();
   }
 
@@ -118,7 +120,7 @@ class SceneManager {
     renderer.render(scene, camera);
     control.update();
     requestAnimationFrame(this.animate);
-    Debug.renderInfo(proton, 3);
+    debug.renderInfo(proton, 3);
   };
 
   createEmitter(obj: any) {
