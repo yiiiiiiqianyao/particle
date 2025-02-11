@@ -77,8 +77,10 @@ export class Proton extends EventDispatcher {
   update(delta = 0.0167) {
     this.dispatchEvent("PROTON_UPDATE", this);
     if (delta > 0) {
-      var i = this.emitters.length;
-      while (i--) this.emitters[i].update(delta);
+      let i = this.emitters.length;
+      while (i--) {
+        this.emitters[i].update(delta);
+      }
     }
 
     this.dispatchEvent("PROTON_UPDATE_AFTER", this);
@@ -90,10 +92,12 @@ export class Proton extends EventDispatcher {
    * @return (number) particles count
    */
   getCount() {
-    var total = 0;
-    var i,
-      length = this.emitters.length;
-    for (i = 0; i < length; i++) total += this.emitters[i].particles.length;
+    let total = 0;
+    let i;
+    const length = this.emitters.length;
+    for (i = 0; i < length; i++) {
+      total += this.emitters[i].particles.length;
+    }
     return total;
   }
 
@@ -102,8 +106,8 @@ export class Proton extends EventDispatcher {
    * @name destroy the proton
    */
   destroy() {
-    var i = 0,
-      length = this.emitters.length;
+    let i = 0;
+    const length = this.emitters.length;
 
     for (i; i < length; i++) {
       this.emitters[i].destroy();
