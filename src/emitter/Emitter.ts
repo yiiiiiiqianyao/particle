@@ -18,10 +18,10 @@ export class Emitter extends Particle {
   behaviours: Behaviour[] = [];
   currentEmitTime: number | string = 0; // 当前触发次数
   totalEmitTimes: number | string = -1; // 总触发次数
-   /**
-     * @property {Number} damping -The friction coefficient for all particle emit by This;
-     * @default 0.006
-     */
+  /**
+    * @property {Number} damping -The friction coefficient for all particle emit by This;
+    * @default 0.006
+    */
   damping: number = 0.006; // 衰减系数
   /**
  * If bindEmitter the particles can bind this emitter's property;
@@ -30,15 +30,15 @@ export class Emitter extends Particle {
  * @default true
  */
   bindEmitter = true;
-      /**
-     * The number of particles per second emit (a [particle]/b [s]);
-     * @property rate
-     * @type {Rate}
-     * @default Rate(1, .1)
-     */
-      rate = new Rate(1, 0.1);
-      id: string;
-      cID: number;
+  /**
+ * The number of particles per second emit (a [particle]/b [s]);
+ * @property rate
+ * @type {Rate}
+ * @default Rate(1, .1)
+ */
+  rate = new Rate(1, 0.1);
+  id: string;
+  cID: number;
 
   constructor(pObj?: any) {
     super(pObj);
@@ -172,7 +172,7 @@ export class Emitter extends Particle {
   }
 
   integrate(time: number) {
-    var damping = 1 - this.damping;
+    const damping = 1 - this.damping;
     Proton.integrator.integrate(this, time, damping);
 
     var i = this.particles.length;
