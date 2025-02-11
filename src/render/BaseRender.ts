@@ -1,30 +1,32 @@
 import { Proton } from "../core";
 import { Particle } from "../core/Particle";
 
+/**
+ * The BaseRender class is the base for the other Render
+ * render 类控制粒子的渲染表现（如材质、缩放等），并支持在每帧进行作用
+ */
 export class BaseRender {
   name: string;
   proton!: Proton | null;
   constructor() {
     this.name = "BaseRender";
   }
-  init (proton: Proton) {
-    var self = this;
+  init(proton: Proton) {
     this.proton = proton;
-
-    this.proton.addEventListener("PROTON_UPDATE", function (proton: Particle) {
-      self.onProtonUpdate.call(self, proton);
+    proton.addEventListener("PROTON_UPDATE", (proton: Particle) => {
+      this.onProtonUpdate(proton);
     });
 
-    this.proton.addEventListener("PARTICLE_CREATED", function (particle: Particle) {
-      self.onParticleCreated.call(self, particle);
+    proton.addEventListener("PARTICLE_CREATED", (particle: Particle) => {
+      this.onParticleCreated(particle);
     });
 
-    this.proton.addEventListener("PARTICLE_UPDATE", function (particle: Particle) {
-      self.onParticleUpdate.call(self, particle);
+    proton.addEventListener("PARTICLE_UPDATE", (particle: Particle) => {
+      this.onParticleUpdate(particle);
     });
 
-    this.proton.addEventListener("PARTICLE_DEAD", function (particle: Particle) {
-      self.onParticleDead.call(self, particle);
+    proton.addEventListener("PARTICLE_DEAD", (particle: Particle) => {
+      this.onParticleDead(particle);
     });
   }
 

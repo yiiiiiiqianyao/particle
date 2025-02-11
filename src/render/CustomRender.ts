@@ -11,8 +11,8 @@ export class CustomRender extends BaseRender {
 
     this.name = "CustomRender";
   }
-  onProtonUpdate = function () {};
-  onParticleCreated = function (particle: Particle) {};
-  onParticleUpdate = function (particle: Particle) {};
-  onParticleDead = function (particle: Particle) {};
+  onProtonUpdate() { };
+  onParticleCreated(particle: Particle) { };
+  onParticleUpdate(particle: Particle) { };
+  onParticleDead(particle: Particle) { };
 }

@@ -1,9 +1,11 @@
 // @ts-nocheck
 import { Util } from '../utils/Util';
 import { Vector3D } from '../math/Vector3D';
-import { ease } from '../ease/ease';
+import { ease, EaseFunc } from '../ease/ease';
 import { PI } from './constant';
 import { EventDispatcher } from '../events/EventDispatcher'
+import { Behaviour } from 'yiqianyao_particle/Behaviour';
+import { Proton } from '.';
 /**
  * the Particle class
  * @param {Number} pObj - the parameters of particle config;
@@ -15,28 +17,33 @@ import { EventDispatcher } from '../events/EventDispatcher'
  */
 export class Particle extends EventDispatcher {
   static ID = 0;
-  life: number;
-  age;
-  old;
-  a: Vector3D; // 加速度 acceleration
-  v: Vector3D; // 速度 velocity
-  p: Vector3D; // 位置
-  mass;
-  target;
-  radius: number; // 粒子的半径
-  scale;
-  rotation;
-  transform;
-  useAlpha;
-  color;
-  useColor;
-  behaviours;
-  body;
-  sleep;
-  alpha;
-  dead: boolean; // 粒子是否死亡
+  id: string;
+  name: string;
+  life!: number;
+  age!: number;
+  energy!: number;
+  old!: any;
+  a!: Vector3D; // 加速度 acceleration
+  v!: Vector3D; // 速度 velocity
+  p!: Vector3D; // 位置
+  mass!: number;
+  target!: any;
+  radius!: number; // 粒子的半径
+  scale!: number;
+  rotation!: Vector3D;
+  transform!: any;
+  useAlpha!: any;
+  color!: any;
+  useColor!: any;
+  behaviours!: Behaviour[];
+  body!: any;
+  sleep!: boolean;
+  alpha!: number;
+  dead!: boolean; // 粒子是否死亡
+  parent!: Proton | null;
+  easing!: EaseFunc;
 
-  constructor(pOBJ) {
+  constructor(pOBJ: any) {
     super();
     /**
      * @property {Number}  cID               - The particle's cID
@@ -73,7 +80,7 @@ export class Particle extends EventDispatcher {
   * @property {Array}  behaviours               - The particle's behaviours array
   * @property {Object}  transform               - The particle's transform collection
   */
-  reset(init) {
+  reset(init: any) {
     this.life = Infinity;
     this.age = 0;
     //energy loss
@@ -126,7 +133,7 @@ export class Particle extends EventDispatcher {
 
     return this;
   }
-  update(time, index) {
+  update(time: number, index: number) {
     if (!this.sleep) {
       this.age += time;
 

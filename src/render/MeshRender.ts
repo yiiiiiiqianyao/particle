@@ -14,18 +14,25 @@ export class MeshRender extends BaseRender {
 
     this._targetPool = new Pool();
     this._materialPool = new Pool();
-    this._body = new THREE.Mesh(
-      new THREE.BoxGeometry(50, 50, 50),
-      new THREE.MeshLambertMaterial({ color: "#ff0000" })
-    );
-
     this.name = "MeshRender";
+  }
+
+  getDefaultBody() {
+    if(!this._body) {
+      this._body = new THREE.Mesh(
+        new THREE.BoxGeometry(50, 50, 50),
+        new THREE.MeshLambertMaterial({ color: "#ff0000" })
+      );
+    }
+    return this._body;
   }
   onProtonUpdate() { }
   onParticleCreated(particle: Particle) {
     if (!particle.target) {
       //set target
-      if (!particle.body) particle.body = this._body;
+      if (!particle.body) {
+        particle.body = this.getDefaultBody();
+      }
       particle.target = this._targetPool.get(particle.body);
 
       //set material
