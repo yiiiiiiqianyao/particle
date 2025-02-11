@@ -9,6 +9,7 @@ import {
   Gravity,
   Life,
   Mass,
+  Particle,
   Proton,
   Radius,
   Rate,
@@ -89,21 +90,21 @@ class SceneManager {
     proton.addEmitter(this.createEmitter(scene, proton));
 
     const particleRenderer = new CustomRender();
-    particleRenderer.onParticleCreated = (p) => {
+    particleRenderer.onParticleCreated = (p: Particle) => {
       p.target = particleRenderer.targetPool.get(mesh);
       p.target.position.copy(p.p);
       scene.add(p.target);
     };
 
-    particleRenderer.onParticleUpdate = (p) => {
+    particleRenderer.onParticleUpdate = (p: Particle) => {
       p.target.position.copy(p.p);
       p.target.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
-
-      const scale = p.scale * 30;
+      // 在初始化的时候 更新粒子的 scale
+      const scale = p.scale * 35;
       p.target.scale.set(scale, scale, scale);
     };
 
-    particleRenderer.onParticleDead = (p) => {
+    particleRenderer.onParticleDead = (p: Particle) => {
       particleRenderer.targetPool.expire(p.target);
       scene.remove(p.target);
       p.target = null;

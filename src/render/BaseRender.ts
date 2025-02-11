@@ -1,6 +1,10 @@
 import { Proton } from "../core";
 import { Particle } from "../core/Particle";
 
+/**
+ * The BaseRender class is the base for the other Render
+ * render 类控制粒子的渲染表现（如材质、缩放等），并支持在每帧进行作用
+ */
 export class BaseRender {
   name: string;
   proton!: Proton | null;
