@@ -92,22 +92,24 @@ class SceneManager {
 
     const particleRenderer = new CustomRender();
     particleRenderer.onParticleCreated = (p: Particle) => {
-      p.target = particleRenderer.targetPool.get(mesh);
+      p.target = particleRenderer.targetPool.get(mesh) as THREE.Object3D;
       p.target.position.copy(p.p);
       scene.add(p.target);
     };
 
     particleRenderer.onParticleUpdate = (p: Particle) => {
-      p.target.position.copy(p.p);
-      p.target.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
+      const target = p.target as THREE.Object3D;
+      target.position.copy(p.p);
+      target.rotation.set(p.rotation.x, p.rotation.y, p.rotation.z);
       // 在初始化的时候 更新粒子的 scale
       const scale = p.scale * 35;
-      p.target.scale.set(scale, scale, scale);
+      target.scale.set(scale, scale, scale);
     };
 
     particleRenderer.onParticleDead = (p: Particle) => {
-      particleRenderer.targetPool.expire(p.target);
-      scene.remove(p.target);
+      const target = p.target as THREE.Object3D;
+      particleRenderer.targetPool.expire(target);
+      scene.remove(target);
       p.target = null;
     };
 

@@ -1,12 +1,12 @@
-// @ts-nocheck
 import { Util } from '../utils/Util';
 import { Vector3D } from '../math/Vector3D';
 import { ease, EaseFunc } from '../ease/ease';
 import { PI } from './constant';
 import { EventDispatcher } from '../events/EventDispatcher'
 import { Behaviour } from 'yiqianyao_particle/Behaviour';
-import { Proton } from '.';
 import { Emitter } from 'yiqianyao_particle/emitter';
+import { IParticle } from './interface';
+import { Object3D } from 'three';
 /**
  * the Particle class
  * @param {Number} pObj - the parameters of particle config;
@@ -23,29 +23,29 @@ export class Particle extends EventDispatcher {
   life!: number;
   age!: number;
   energy!: number;
-  old!: any;
-  a!: Vector3D; // 加速度 acceleration
-  v!: Vector3D; // 速度 velocity
-  p!: Vector3D; // 位置
+  dead!: boolean; // 粒子是否死亡
+  sleep!: boolean;
   mass!: number;
-  target!: any;
+  p = new Vector3D(); // 位置
+  v = new Vector3D(); // 速度 velocity
+  a = new Vector3D(); // 加速度 acceleration
+
+  target: Object3D | null = null;
+  alpha!: number;
   radius!: number; // 粒子的半径
   scale!: number;
-  rotation!: Vector3D;
-  transform!: any;
-  useAlpha!: any;
-  color!: any;
-  useColor!: any;
-  behaviours!: Behaviour[];
-  body!: any;
-  sleep!: boolean;
-  alpha!: number;
-  dead!: boolean; // 粒子是否死亡
-  parent!: Emitter | null; // 父级是粒子发射器 setupParticle 的时候设置
-  easing!: EaseFunc;
 
-  // TODO 设置粒子初始化参数待完善
-  constructor(pOBJ: IParticle) {
+  useColor!: boolean;
+  useAlpha!: boolean;
+  easing!: EaseFunc;
+  old: Record<string, Vector3D> = {};
+  behaviours!: Behaviour[];
+  rotation = new Vector3D();
+  color!: any;
+  transform: Record<string, any> = {};
+  body: any | null = null;
+  parent: Emitter | null = null; // 父级是粒子发射器 setupParticle 的时候设置
+  constructor(pOBJ?: IParticle) {
     super();
     /**
      * @property {Number}  cID               - The particle's cID
@@ -56,7 +56,29 @@ export class Particle extends EventDispatcher {
     this.id = "particle_" + Particle.ID++;
     this.name = "Particle";
     this.reset("init");
-    Util.setPrototypeByObj(this, pOBJ);
+    this.life = pOBJ?.life || Infinity;
+    this.age = pOBJ?.age || 0;
+    this.energy = pOBJ?.energy || 1;
+    this.dead = pOBJ?.dead || false;
+    this.sleep = pOBJ?.sleep || false;
+    this.mass = pOBJ?.mass || 1;
+    this.radius = pOBJ?.radius || 10;
+    this.alpha = pOBJ?.alpha || 1;
+    this.scale = pOBJ?.scale || 1;
+    this.useColor = pOBJ?.useColor || false;
+    this.useAlpha = pOBJ?.useAlpha || false;
+    this.easing = pOBJ?.easing ||ease.easeLinear;
+
+    this.old.p = this.p.clone();
+    this.old.v = this.v.clone();
+    this.old.a = this.a.clone();
+
+    this.behaviours = pOBJ?.behaviours || [];
+    this.rotation = pOBJ?.rotation || this.rotation;
+
+    this.color = pOBJ?.color || { r: 0, g: 0, b: 0 };
+
+    // Util.setPrototypeByObj(this, pOBJ);
   }
   getDirection() {
     return Math.atan2(this.v.x, -this.v.y) * (180 / PI);
@@ -82,7 +104,7 @@ export class Particle extends EventDispatcher {
   * @property {Array}  behaviours               - The particle's behaviours array
   * @property {Object}  transform               - The particle's transform collection
   */
-  reset(init: any) {
+  reset(init?: string) {
     this.life = Infinity;
     this.age = 0;
     //energy loss
@@ -138,8 +160,7 @@ export class Particle extends EventDispatcher {
   update(time: number, index: number) {
     if (!this.sleep) {
       this.age += time;
-
-      var i = this.behaviours.length;
+      let i = this.behaviours.length;
       while (i--) {
         this.behaviours[i] &&
           this.behaviours[i].applyBehaviour(this, time, index);
@@ -151,24 +172,24 @@ export class Particle extends EventDispatcher {
     if (this.age >= this.life) {
       this.destroy();
     } else {
-      var scale = this.easing(this.age / this.life);
+      const scale = this.easing(this.age / this.life);
       this.energy = Math.max(1 - scale, 0);
     }
   }
-  addBehaviour(behaviour) {
+  addBehaviour(behaviour: Behaviour) {
     this.behaviours.push(behaviour);
     behaviour.initialize(this);
   }
 
-  addBehaviours(behaviours) {
-    var i = behaviours.length;
+  addBehaviours(behaviours: Behaviour[]) {
+    let i = behaviours.length;
     while (i--) {
       this.addBehaviour(behaviours[i]);
     }
   }
 
-  removeBehaviour(behaviour) {
-    var index = this.behaviours.indexOf(behaviour);
+  removeBehaviour(behaviour: Behaviour) {
+    const index = this.behaviours.indexOf(behaviour);
     if (index > -1) {
       this.behaviours.splice(index, 1);
     }
