@@ -18,6 +18,7 @@ import {
   Span,
   Vector3D,
   Velocity,
+  ZoneCross,
 } from 'yiqianyao_particle';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
@@ -147,7 +148,7 @@ class SceneManager {
     const zone = new BoxZone(600);
     zone.friction = 0.95;
     zone.max = 7;
-    emitter.addBehaviour(new CrossZone(zone, 'bound'));
+    emitter.addBehaviour(new CrossZone(zone, ZoneCross.Bound));
     emitter.addBehaviour(
       new Color(0xff0000, 'random', Infinity, ease.easeOutQuart),
     );

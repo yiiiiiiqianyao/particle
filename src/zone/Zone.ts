@@ -4,6 +4,12 @@ import { Particle } from "yiqianyao_particle/core";
  * Zone is a base class.
  * @constructor
  */
+export enum ZoneCross {
+  Bound = "bound",
+  Dead = "dead",
+  Cross = "cross",
+}
+
 export class Zone {
   x!: number;
   y!: number;
@@ -25,13 +31,13 @@ export class Zone {
 
   crossing(particle: any) {
     switch (this.crossType) {
-      case "bound":
+      case ZoneCross.Bound:
         this._bound(particle);
         break;
-      case "cross":
+      case ZoneCross.Cross:
         this._cross(particle);
         break;
-      case "dead":
+      case ZoneCross.Dead:
         this._dead(particle);
         break;
     }

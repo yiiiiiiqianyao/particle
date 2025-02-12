@@ -18,6 +18,7 @@ import {
   SpriteRender,
   Vector3D,
   Velocity,
+  ZoneCross,
 } from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
@@ -91,7 +92,7 @@ class SceneManager {
     emitter.addBehaviour(new Alpha(1, 0));
     emitter.addBehaviour(new Color("#4F1500", "#0029FF"));
     emitter.addBehaviour(new Scale(1, 0.5));
-    emitter.addBehaviour(new CrossZone(new ScreenZone(camera, renderer), "dead"));
+    emitter.addBehaviour(new CrossZone(new ScreenZone(camera, renderer), ZoneCross.Dead));
 
     emitter.addBehaviour(new Force(0, 0, -20));
     emitter.setCameraAndRenderer(camera, renderer);

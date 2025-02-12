@@ -3,14 +3,17 @@ import { Util } from '../utils/Util'
 import { Emitter } from '../emitter/Emitter';
 import { Particle } from '../core/Particle';
 
+// 负责粒子的初始化
 export class InitializeUtil {
   static initialize(emitter: Emitter, particle: Particle, initializes: Initialize[]) {
-    var i = initializes.length;
+    let i = initializes.length;
     while (i--) {
-      var initialize = initializes[i];
-      if (initialize instanceof Initialize)
+      const initialize = initializes[i];
+      if (initialize instanceof Initialize) {
         initialize.init(emitter, particle);
-      else InitializeUtil.init(emitter, particle, initialize);
+      } else {
+        InitializeUtil.init(emitter, particle, initialize);
+      }
     }
 
     InitializeUtil.bindEmitter(emitter, particle);

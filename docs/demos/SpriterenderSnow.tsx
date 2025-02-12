@@ -19,6 +19,7 @@ import {
   SpriteRender,
   Vector3D,
   Velocity,
+  ZoneCross,
 } from 'yiqianyao_particle';
 import * as THREE from 'three';
 import {
@@ -88,6 +89,7 @@ class SceneManager {
     const emitter = new Emitter();
     emitter.rate = new Rate(new Span(34, 48), new Span(.2, .5));
     emitter.addInitialize(new Mass(1));
+    // 设置粒子的初始半径
     emitter.addInitialize(new Radius(new Span(10, 20)));
 
     const position = new Position();
@@ -103,7 +105,7 @@ class SceneManager {
     emitter.addBehaviour(new Gravity(2));
 
     const screenZone = new ScreenZone(camera, renderer, 20, "234");
-    emitter.addBehaviour(new CrossZone(screenZone, "dead"));
+    emitter.addBehaviour(new CrossZone(screenZone, ZoneCross.Dead));
 
     emitter.p.x = 0;
     emitter.p.y = 800;

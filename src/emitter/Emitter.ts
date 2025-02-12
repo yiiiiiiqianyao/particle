@@ -18,6 +18,7 @@ export class Emitter extends Particle {
   behaviours: Behaviour[] = [];
   currentEmitTime: number | string = 0; // 当前触发次数
   totalEmitTimes: number | string = -1; // 总触发次数
+  parent: Proton | null;
   /**
     * @property {Number} damping -The friction coefficient for all particle emit by This;
     * @default 0.006
@@ -226,9 +227,10 @@ export class Emitter extends Particle {
     }
   }
 
+  // 初始化粒子
   setupParticle(particle: Particle, initialize: Initialize, behaviour: Behaviour) {
-    var initializes = this.initializes;
-    var behaviours = this.behaviours;
+    let initializes = this.initializes;
+    let behaviours = this.behaviours;
 
     if (initialize) {
       if (Array.isArray(initialize)) {

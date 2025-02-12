@@ -6,6 +6,7 @@ import { PI } from './constant';
 import { EventDispatcher } from '../events/EventDispatcher'
 import { Behaviour } from 'yiqianyao_particle/Behaviour';
 import { Proton } from '.';
+import { Emitter } from 'yiqianyao_particle/emitter';
 /**
  * the Particle class
  * @param {Number} pObj - the parameters of particle config;
@@ -40,10 +41,11 @@ export class Particle extends EventDispatcher {
   sleep!: boolean;
   alpha!: number;
   dead!: boolean; // 粒子是否死亡
-  parent!: Proton | null;
+  parent!: Emitter | null; // 父级是粒子发射器 setupParticle 的时候设置
   easing!: EaseFunc;
 
-  constructor(pOBJ: any) {
+  // TODO 设置粒子初始化参数待完善
+  constructor(pOBJ: IParticle) {
     super();
     /**
      * @property {Number}  cID               - The particle's cID
