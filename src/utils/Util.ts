@@ -5,11 +5,10 @@ export class Util {
         const initValue = (value !== null && value !== undefined) ? value : defaults;
         return initValue;
     }
-    static destroyArray(array: any[]) {
-        array.length = 0;
-    }
-    static destroyObject(obj: Record<any, any>) {
-        for (var o in obj) delete obj[o];
+    static destroyObject(obj: Record<string, any>) {
+        for (const o in obj) {
+          delete obj[o];
+        }
     }
     static isUndefined(...items: any[]) {
         for (var id in items) {

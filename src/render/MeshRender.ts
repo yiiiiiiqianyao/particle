@@ -6,7 +6,7 @@ import { Particle } from "../core/Particle";
 export class MeshRender extends BaseRender {
   _targetPool: Pool;
   _materialPool: Pool;
-  _body: any;
+  _body!: THREE.Mesh;
   container: any;
   constructor(container: THREE.Object3D) {
     super();
@@ -33,14 +33,14 @@ export class MeshRender extends BaseRender {
       if (!particle.body) {
         particle.body = this.getDefaultBody();
       }
-      particle.target = this._targetPool.get(particle.body);
+      particle.target = this._targetPool.get(particle.body) as THREE.Mesh;
 
       //set material
       if (particle.useAlpha || particle.useColor) {
-        particle.target.material.__puid = PUID.id(particle.body.material);
-        particle.target.material = this._materialPool.get(
-          particle.target.material
-        );
+        const target = particle.target as THREE.Mesh;
+        // @ts-ignore
+        target.material.__puid = PUID.id(particle.body.material);
+        target.material = this._materialPool.get(target.material);
       }
     }
 
@@ -51,34 +51,41 @@ export class MeshRender extends BaseRender {
   }
   onParticleUpdate(particle: Particle) {
     if (particle.target) {
-      particle.target.position.copy(particle.p);
-      particle.target.rotation.set(
+      const target = particle.target as THREE.Mesh;
+      target.position.copy(particle.p);
+      target.rotation.set(
         particle.rotation.x,
         particle.rotation.y,
         particle.rotation.z
       );
       this.scale(particle);
-
+      const materials = Array.isArray(target.material) ? target.material : [target.material];
       if (particle.useAlpha) {
-        particle.target.material.opacity = particle.alpha;
-        particle.target.material.transparent = true;
+        materials.forEach((m) => {
+          m.opacity = particle.alpha;
+          m.transparent = true;
+        })
       }
 
       if (particle.useColor) {
-        particle.target.material.color.copy(particle.color);
+        materials.forEach((m) => {
+          // @ts-ignore
+          m?.color.copy(particle.color);
+        })
       }
     }
   }
   scale(particle: Particle) {
-    particle.target.scale.set(particle.scale, particle.scale, particle.scale);
+    particle.target!.scale.set(particle.scale, particle.scale, particle.scale);
   }
   onParticleDead(particle: Particle) {
     if (particle.target) {
-      if (particle.useAlpha || particle.useColor)
-        this._materialPool.expire(particle.target.material);
-
-      this._targetPool.expire(particle.target);
-      this.container.remove(particle.target);
+      const target = particle.target as THREE.Mesh;
+      if (particle.useAlpha || particle.useColor) {
+        this._materialPool.expire(target.material);
+      }
+      this._targetPool.expire(target);
+      this.container.remove(target);
       particle.target = null;
     }
   }

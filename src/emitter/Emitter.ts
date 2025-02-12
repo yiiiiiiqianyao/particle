@@ -132,8 +132,10 @@ export class Emitter extends Particle {
    * @param {Initialize} initialize a initialize
    */
   removeInitialize(initializer: Initialize) {
-    var index = this.initializes.indexOf(initializer);
-    if (index > -1) this.initializes.splice(index, 1);
+    let index = this.initializes.indexOf(initializer);
+    if (index > -1) {
+      this.initializes.splice(index, 1);
+    }
   }
 
   /**
@@ -141,7 +143,7 @@ export class Emitter extends Particle {
    * @method removeInitializers
    */
   removeInitializers() {
-    Util.destroyArray(this.initializes);
+    this.initializes.length = 0;
   }
   /**
    * add the Behaviour to particles;
@@ -169,14 +171,14 @@ export class Emitter extends Particle {
    * @method removeAllBehaviours
    */
   removeAllBehaviours() {
-    Util.destroyArray(this.behaviours);
+    this.behaviours.length = 0;
   }
 
   integrate(time: number) {
     const damping = 1 - this.damping;
     Proton.integrator.integrate(this, time, damping);
 
-    var i = this.particles.length;
+    let i = this.particles.length;
     while (i--) {
       const particle = this.particles[i];
       particle.update(time, i);
@@ -189,16 +191,20 @@ export class Emitter extends Particle {
 
   emitting(time: number) {
     if (this.totalEmitTimes === "once") {
-      var i = this.rate.getValue(99999);
+      let i = this.rate.getValue(99999);
       if (i > 0) this.cID = i;
-      while (i--) this.createParticle();
+      while (i--) {
+        this.createParticle();
+      }
       this.totalEmitTimes = "none";
     } else if (!isNaN(this.totalEmitTimes)) {
       this.currentEmitTime += time;
       if (this.currentEmitTime < this.totalEmitTimes) {
-        var i = this.rate.getValue(time);
+        let i = this.rate.getValue(time);
         if (i > 0) this.cID = i;
-        while (i--) this.createParticle();
+        while (i--) {
+          this.createParticle();
+        }
       }
     }
   }

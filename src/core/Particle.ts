@@ -38,7 +38,7 @@ export class Particle extends EventDispatcher {
   useColor!: boolean;
   useAlpha!: boolean;
   easing!: EaseFunc;
-  old: Record<string, Vector3D> = {};
+  old: Record<string, Vector3D>;
   behaviours!: Behaviour[];
   rotation = new Vector3D();
   color!: any;
@@ -67,8 +67,8 @@ export class Particle extends EventDispatcher {
     this.scale = pOBJ?.scale || 1;
     this.useColor = pOBJ?.useColor || false;
     this.useAlpha = pOBJ?.useAlpha || false;
-    this.easing = pOBJ?.easing ||ease.easeLinear;
-
+    this.easing = pOBJ?.easing || ease.easeLinear;
+    this.old = {};
     this.old.p = this.p.clone();
     this.old.v = this.v.clone();
     this.old.a = this.a.clone();
@@ -115,10 +115,8 @@ export class Particle extends EventDispatcher {
     this.parent = null;
     this.mass = 1;
     this.radius = 10;
-
     this.alpha = 1;
     this.scale = 1;
-
     this.useColor = false;
     this.useAlpha = false;
 
@@ -132,7 +130,6 @@ export class Particle extends EventDispatcher {
       this.old.p = this.p.clone();
       this.old.v = this.v.clone();
       this.old.a = this.a.clone();
-
       this.behaviours = [];
       this.transform = {};
       this.color = { r: 0, g: 0, b: 0 };
@@ -154,7 +151,6 @@ export class Particle extends EventDispatcher {
       Util.destroyObject(this.transform);
       this.removeAllBehaviours();
     }
-
     return this;
   }
   update(time: number, index: number) {
@@ -176,6 +172,10 @@ export class Particle extends EventDispatcher {
       this.energy = Math.max(1 - scale, 0);
     }
   }
+  /**
+   * 粒子添加行为
+   * @param behaviour
+   */
   addBehaviour(behaviour: Behaviour) {
     this.behaviours.push(behaviour);
     behaviour.initialize(this);
@@ -196,7 +196,7 @@ export class Particle extends EventDispatcher {
   }
 
   removeAllBehaviours() {
-    Util.destroyArray(this.behaviours);
+    this.behaviours.length = 0;
   }
 
   /**
