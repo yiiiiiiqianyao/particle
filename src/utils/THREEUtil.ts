@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { PUID } from './PUID';
+import { Vector3D } from 'yiqianyao_particle/math';
 
 export class THREEUtil {
     static _vector: THREE.Vector3 | null;
@@ -17,7 +18,7 @@ export class THREEUtil {
         }
         return THREEUtil._dir;
     }
-    static toScreenPos(pos: any, camera: any, canvas: any) {
+    static toScreenPos(pos: Vector3D, camera: THREE.Camera, canvas: HTMLCanvasElement) {
         const vector = THREEUtil.vector;
         vector.copy(pos);
         // map to normalized device coordinate (NDC) space

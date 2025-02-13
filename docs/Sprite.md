@@ -12,7 +12,3 @@ sprite 重力
 ## Sprite Render PointZone
 sprite PointZone
 <code src="./demos/SpriterenderPointzone.tsx"></code>
-
-## Sprite Render Snow
-sprite Snow
-<code src="./demos/SpriterenderSnow.tsx"></code>
