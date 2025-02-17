@@ -25,7 +25,7 @@ export class Particle extends EventDispatcher {
   energy!: number;
   dead!: boolean; // 粒子是否死亡
   sleep!: boolean;
-  mass!: number;
+  mass!: number; // 粒子的质量
   p = new Vector3D(); // 位置
   v = new Vector3D(); // 速度 velocity
   a = new Vector3D(); // 加速度 acceleration

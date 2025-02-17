@@ -15,7 +15,7 @@ export class Force extends Behaviour {
     this.name = "Force";
   }
   // 使用箭头函数 绑定 this
-  reset = (fx, fy, fz) => {
+  reset = (fx: number, fy: number, fz: number) => {
     this.force = this.normalizeForce(new Vector3D(fx, fy, fz));
     this.force.id = Math.random();
   };

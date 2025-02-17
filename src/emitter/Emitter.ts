@@ -133,7 +133,7 @@ export class Emitter extends Particle {
    * @param {Initialize} initialize a initialize
    */
   removeInitialize(initializer: Initialize) {
-    let index = this.initializes.indexOf(initializer);
+    const index = this.initializes.indexOf(initializer);
     if (index > -1) {
       this.initializes.splice(index, 1);
     }
@@ -164,8 +164,10 @@ export class Emitter extends Particle {
    * @param {Behaviour} behaviour a behaviour
    */
   removeBehaviour(behaviour: Behaviour) {
-    var index = this.behaviours.indexOf(behaviour);
-    if (index > -1) this.behaviours.splice(index, 1);
+    const index = this.behaviours.indexOf(behaviour);
+    if (index > -1) {
+      this.behaviours.splice(index, 1);
+    }
   }
   /**
    * remove all behaviours
@@ -186,8 +188,8 @@ export class Emitter extends Particle {
     let i = this.particles.length;
     while (i--) {
       const particle = this.particles[i];
-      particle.update(deltaTime, i);
-      Proton.integrator.integrate(particle, deltaTime, damping);
+      particle.update(deltaTime, i); // applyBehaviour
+      Proton.integrator.integrate(particle, deltaTime, damping); // 计算出粒子的速度和位置
 
       this.parent && this.parent.dispatchEvent("PARTICLE_UPDATE", particle);
       bindEmitterEvent && this.dispatchEvent("PARTICLE_UPDATE", particle);
@@ -268,8 +270,9 @@ export class Emitter extends Particle {
         behaviours = [behaviour];
       }
     }
-
+    // 初始化设置粒子的值
     InitializeUtil.initialize(this, particle, initializes);
+    // 设置粒子的 behaviour
     particle.addBehaviours(behaviours);
     particle.parent = this;
     this.particles.push(particle);

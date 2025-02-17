@@ -1,8 +1,9 @@
-// @ts-nocheck
+
 import { Behaviour } from './Behaviour';
 import { Util } from '../utils/Util';
 import { Vector3D } from '../math/Vector3D';
-import { EaseFunc } from 'particle/ease/ease';
+import { EaseFunc, Particle } from 'yiqianyao_particle';
+
 
 // 吸引力
 export class Attraction extends Behaviour {
@@ -13,7 +14,7 @@ export class Attraction extends Behaviour {
   force: number;
   attractionForce: Vector3D;
   lengthSq: number;
-  constructor(targetPosition?: Vector3D, force, radius, life?: number, easing?: EaseFunc) {
+  constructor(targetPosition: Vector3D, force: number, radius?: number, life?: number, easing?: EaseFunc) {
     super(life, easing);
     this.targetPosition = Util.initValue(targetPosition, new Vector3D());
     this.radius = Util.initValue(radius, 1000);
@@ -23,7 +24,9 @@ export class Attraction extends Behaviour {
     this.lengthSq = 0;
     this.name = "Attraction";
   }
-  reset(targetPosition: Vector3D, force, radius, life, easing) {
+
+  // @ts-ignore
+  reset(targetPosition: Vector3D, force: number, radius?: number, life?: number, easing?: EaseFunc) {
     this.targetPosition = Util.initValue(targetPosition, new Vector3D());
     this.radius = Util.initValue(radius, 1000);
     this.force = Util.initValue(this.normalizeValue(force), 100);
@@ -32,7 +35,7 @@ export class Attraction extends Behaviour {
     this.lengthSq = 0;
     if (life) super.reset.call(this, life, easing);
   }
-  applyBehaviour(particle, time, index) {
+  applyBehaviour(particle: Particle, time: number, index: number) {
     super.applyBehaviour.call(this, particle, time, index);
     this.attractionForce.copy(this.targetPosition);
     this.attractionForce.sub(particle.p);

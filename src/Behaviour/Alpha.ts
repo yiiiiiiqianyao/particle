@@ -24,8 +24,11 @@ export class Alpha extends Behaviour {
     this.name = "Alpha";
   }
   reset(a, b, life, easing) {
-    if (b === null || b === undefined) this._same = true;
-    else this._same = false;
+    if (b === null || b === undefined) {
+      this._same = true;
+    } else {
+      this._same = false;
+    }
 
     this.a = createSpan(Util.initValue(a, 1));
     this.b = createSpan(b);
@@ -34,8 +37,11 @@ export class Alpha extends Behaviour {
   initialize(particle) {
     particle.useAlpha = true;
     particle.transform.alphaA = this.a.getValue();
-    if (this._same) particle.transform.alphaB = particle.transform.alphaA;
-    else particle.transform.alphaB = this.b.getValue();
+    if (this._same) {
+      particle.transform.alphaB = particle.transform.alphaA;
+    } else {
+      particle.transform.alphaB = this.b.getValue();
+    }
   }
   applyBehaviour(particle, time, index) {
     super.applyBehaviour.call(this, particle, time, index);

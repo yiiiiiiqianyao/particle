@@ -15,13 +15,15 @@ import { Particle } from '../core/Particle';
  */
 export class Life extends Initialize {
   lifePan: Span;
-  constructor(a?: any, b?: any, c?: any) {
+  constructor(a: number, b?: number, c?: number) {
     super();
     this.lifePan = createSpan(a, b, c);
   }
   initialize(target: Particle) {
-    if (this.lifePan.a === Infinity || this.lifePan.a === "infi")
+    if (this.lifePan.a === Infinity || this.lifePan.a === "infi") {
       target.life = Infinity;
-    else target.life = this.lifePan.getValue();
+    } else {
+      target.life = this.lifePan.getValue();
+    }
   };
 }

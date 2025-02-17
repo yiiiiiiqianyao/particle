@@ -98,7 +98,7 @@ export class Behaviour {
    * @param {Number} the integrate time 1/ms
    * @param {Int} the particle index
    */
-  applyBehaviour(particle: Particle, time: number, index: number) {
+  applyBehaviour(particle: Particle, time: number, index?: number) {
     if (this.dead) return;
 
     this.age += time;

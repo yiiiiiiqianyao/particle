@@ -115,7 +115,7 @@ export class Debug {
       this._infoCon.style.cssText = [
         // "position:fixed;bottom:0px;left:0;cursor:pointer;",
         "position:absolute;bottom:0px;left:0;cursor:pointer;",
-        "opacity:0.9;z-index:10000;padding:10px;font-size:12px;",
+        "opacity:0.9;padding:10px;font-size:12px;",
         "width:120px;height:50px;background-color:#002;color:#0ff;",
       ].join("");
 

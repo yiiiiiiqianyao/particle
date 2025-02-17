@@ -1,6 +1,8 @@
 // @ts-nocheck
+import { Emitter } from 'yiqianyao_particle/emitter';
 import { Zone } from '../zone/Zone';
 import { Initialize } from './Initialize';
+import { Particle } from 'yiqianyao_particle/core';
 
 /**
  * Position is init particle's Position
@@ -28,7 +30,7 @@ export class Position extends Initialize {
       this.zones.length = 0;
       this.zones = [];
     }
-  
+
     // var args = Array.prototype.slice.call(arguments);
     this.zones = this.zones.concat(...arguments);
   };
@@ -38,7 +40,7 @@ export class Position extends Initialize {
   };
 
   initialize = (() => {
-    return (target) => {
+    return (target: Particle) => {
       const zone = this.zones[(Math.random() * this.zones.length) >> 0];
       zone.getPosition();
       target.p.x = zone.vector.x;
