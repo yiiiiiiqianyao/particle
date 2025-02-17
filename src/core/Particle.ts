@@ -153,13 +153,18 @@ export class Particle extends EventDispatcher {
     }
     return this;
   }
-  update(time: number, index: number) {
+  /**
+   * 每帧更新粒子
+   * @param deltaTime 每帧的时间
+   * @param index
+   */
+  update(deltaTime: number, index: number) {
     if (!this.sleep) {
-      this.age += time;
+      this.age += deltaTime;
       let i = this.behaviours.length;
       while (i--) {
         this.behaviours[i] &&
-          this.behaviours[i].applyBehaviour(this, time, index);
+          this.behaviours[i].applyBehaviour(this, deltaTime, index);
       }
     } else {
       //sleep

@@ -55,3 +55,21 @@ constructor(rate: Rate, behavior: Behavior, capacity: number);
 跟随鼠标移动的粒子发射器
 
 <code src="./demos/FollowEmitter.tsx"></code>
+
+## Rate
+粒子发射速率，通常用于发射器控制粒子的发射的速率。
+
+### constructor
+```ts
+constructor(numPan: number | Span, timePan: number | Span);
+```
+### 属性
+| 属性名 | 类型 | 描述 |
+| --- | --- | --- |
+| numPan | number | 发射器每次发射的粒子数量 |
+| timePan | number | 发射器每隔多少时间发射一次 |
+### 方法
+| 方法名 | 描述 |
+| --- | --- |
+| init() | 初始化 |
+| getValue(deltaTime: number) | 根据传入的`deltaTime` 判断当前帧是否能获得发射粒子，`Rate`内部完成计时计算 |

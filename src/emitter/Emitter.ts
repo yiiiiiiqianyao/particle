@@ -1,13 +1,14 @@
-// @ts-nocheck
+
 import { Util } from "../utils/Util";
 import { Rate } from "../initialize/Rate";
 import { Particle } from "../core/Particle";
 import { InitializeUtil } from "../initialize/InitializeUtil";
-import { bindEmtterEvent } from "../core/constant";
+import { bindEmitterEvent } from "../core/constant";
 import { Proton } from "../core/index";
 import { Vector3D } from '../math/Vector3D';
 import { Initialize } from "../initialize/Initialize";
 import { Behaviour } from "../Behaviour/Behaviour";
+import { IParticle } from "yiqianyao_particle/core/interface";
 
 export class Emitter extends Particle {
   static ID = 0;
@@ -16,8 +17,9 @@ export class Emitter extends Particle {
   initializes: Initialize[] = [];
   particles: Particle[] = [];
   behaviours: Behaviour[] = [];
-  currentEmitTime: number | string = 0; // 当前触发次数
-  totalEmitTimes: number | string = -1; // 总触发次数
+  currentEmitTime: number = 0; // 次数器当前的计时
+  totalEmitTimes: number | string = -1; // 总触发多少次
+  // @ts-ignore
   parent: Proton | null;
   /**
     * @property {Number} damping -The friction coefficient for all particle emit by This;
@@ -25,23 +27,23 @@ export class Emitter extends Particle {
     */
   damping: number = 0.006; // 衰减系数
   /**
- * If bindEmitter the particles can bind this emitter's property;
- * @property bindEmitter
- * @type {Boolean}
- * @default true
- */
+   * If bindEmitter the particles can bind this emitter's property;
+   * @property bindEmitter
+   * @type {Boolean}
+   * @default true
+   */
   bindEmitter = true;
   /**
- * The number of particles per second emit (a [particle]/b [s]);
- * @property rate
- * @type {Rate}
- * @default Rate(1, .1)
- */
-  rate = new Rate(1, 0.1);
+   * The number of particles per second emit (a [particle]/b [s]);
+   * @property rate
+   * @type {Rate}
+   * @default Rate(1, .1)
+   */
+  public rate = new Rate(1, 0.1);
   id: string;
   cID: number;
 
-  constructor(pObj?: any) {
+  constructor(pObj?: IParticle) {
     super(pObj);
 
     /**
@@ -60,13 +62,13 @@ export class Emitter extends Particle {
    * @param {Number} totalEmitTimes total emit times;
    * @param {String} life the life of this emitter
    */
-  emit(totalEmitTimes?: number, life?: number) {
+  emit(totalEmitTimes?: number | string, life?: number | boolean | string) {
     this.currentEmitTime = 0;
     this.totalEmitTimes = Util.initValue(totalEmitTimes, Infinity);
     if (life === true || life === "life" || life === "destroy") {
-      this.life = totalEmitTimes === "once" ? 1 : this.totalEmitTimes;
-    } else if (!isNaN(life)) {
-      this.life = life;
+      this.life = totalEmitTimes === "once" ? 1 : (this.totalEmitTimes as number);
+    } else if (!isNaN(life as number)) {
+      this.life = life as number;
     }
     this.rate.init();
   }
@@ -93,12 +95,11 @@ export class Emitter extends Particle {
    * can use emit({x:10},new Gravity(10),{'particleUpdate',fun}) or emit([{x:10},new Initialize],new Gravity(10),{'particleUpdate',fun})
    * @method removeAllParticles
    */
-  createParticle(initialize?: Initialize, behaviour?: Behaviour) {
-    const particle = this.parent.pool.get(Particle);
-    this.setupParticle(particle, initialize, behaviour);
+  private createParticle(initialize?: Initialize, behaviour?: Behaviour) {
+    const particle = this.parent!.pool.get(Particle);
+    this.setupParticle(particle, initialize as Initialize, behaviour as Behaviour);
     this.parent && this.parent.dispatchEvent("PARTICLE_CREATED", particle);
-    bindEmtterEvent && this.dispatchEvent("PARTICLE_CREATED", particle);
-
+    bindEmitterEvent && this.dispatchEvent("PARTICLE_CREATED", particle);
     return particle;
   }
   /**
@@ -109,7 +110,7 @@ export class Emitter extends Particle {
     if (pObj["init"]) {
       pObj.init(this);
     } else {
-      this.initAll();
+      // this.initAll();
     }
   }
 
@@ -174,33 +175,43 @@ export class Emitter extends Particle {
     this.behaviours.length = 0;
   }
 
-  integrate(time: number) {
+  /**
+   *
+   * @param deltaTime
+   */
+  integrate(deltaTime: number) {
     const damping = 1 - this.damping;
-    Proton.integrator.integrate(this, time, damping);
+    Proton.integrator.integrate(this as Particle, deltaTime, damping);
 
     let i = this.particles.length;
     while (i--) {
       const particle = this.particles[i];
-      particle.update(time, i);
-      Proton.integrator.integrate(particle, time, damping);
+      particle.update(deltaTime, i);
+      Proton.integrator.integrate(particle, deltaTime, damping);
 
       this.parent && this.parent.dispatchEvent("PARTICLE_UPDATE", particle);
-      bindEmtterEvent && this.dispatchEvent("PARTICLE_UPDATE", particle);
+      bindEmitterEvent && this.dispatchEvent("PARTICLE_UPDATE", particle);
     }
   }
-
-  emitting(time: number) {
+  /**
+   * 发射粒子
+   * @param deltaTime 每帧时间
+   */
+  private emitting(deltaTime: number) {
     if (this.totalEmitTimes === "once") {
-      let i = this.rate.getValue(99999);
-      if (i > 0) this.cID = i;
+      // 只触发一次的时候，一定会获取发射的粒子，完成本次的发射
+      let i = this.rate.getValue(Infinity);
+      if (i > 0) {
+        this.cID = i;
+      }
       while (i--) {
         this.createParticle();
       }
       this.totalEmitTimes = "none";
-    } else if (!isNaN(this.totalEmitTimes)) {
-      this.currentEmitTime += time;
-      if (this.currentEmitTime < this.totalEmitTimes) {
-        let i = this.rate.getValue(time);
+    } else if (!isNaN(this.totalEmitTimes as number)) {
+      this.currentEmitTime += deltaTime;
+      if (this.currentEmitTime < (this.totalEmitTimes as number)) {
+        let i = this.rate.getValue(deltaTime);
         if (i > 0) this.cID = i;
         while (i--) {
           this.createParticle();
@@ -209,14 +220,18 @@ export class Emitter extends Particle {
     }
   }
 
-  update(time: number) {
-    this.age += time;
+  /**
+   * 每帧更新发射器
+   * @param deltaTime 每帧的时间
+   */
+  update(deltaTime: number) {
+    this.age += deltaTime;
     if (this.dead || this.age >= this.life) {
       this.destroy();
     }
 
-    this.emitting(time);
-    this.integrate(time);
+    this.emitting(deltaTime);
+    this.integrate(deltaTime);
 
     // 剔除死亡的粒子
     let particle;
@@ -225,9 +240,9 @@ export class Emitter extends Particle {
       particle = this.particles[i];
       if (particle.dead) {
         this.parent && this.parent.dispatchEvent("PARTICLE_DEAD", particle);
-        bindEmtterEvent && this.dispatchEvent("PARTICLE_DEAD", particle);
+        bindEmitterEvent && this.dispatchEvent("PARTICLE_DEAD", particle);
 
-        this.parent.pool.expire(particle.reset());
+        this.parent!.pool.expire(particle.reset());
         this.particles.splice(i, 1);
       }
     }

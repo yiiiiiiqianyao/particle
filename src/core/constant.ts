@@ -3,7 +3,7 @@ export const DR = PI / 180;
 export const EULER = 'euler';
 //1:100
 export const MEASURE = 100;
-export const bindEmtterEvent = false;
+export const bindEmitterEvent = false;
 //the max particle number in pool
 export const POOL_MAX = 500;
 export const TIME_STEP = 60;
