@@ -8,6 +8,7 @@ import { Proton } from "../core";
 import { Emitter } from "../emitter/Emitter";
 import { Color } from "../Behaviour/Color";
 import { Zone } from "yiqianyao_particle/zone";
+import { MeshRender } from "yiqianyao_particle/render";
 export class Debug {
   _infoCon!: HTMLElement;
   _infoType = 1;
@@ -75,8 +76,8 @@ export class Debug {
   renderInfo(proton: Proton, style: number | any) {
     function getCreatedNumber(proton: Proton, type: string) {
       const pool = type === "material" ? "_materialPool" : "_targetPool";
-      const renderer = proton.renderers[0];
-      return renderer[pool].cID;
+      const renderer = proton.renderers[0] as MeshRender;
+      return renderer[pool]?.cID || '';
     }
 
     function getEmitterPos(proton: Proton) {
